@@ -26,6 +26,7 @@ func init() {
 	env.Load()
 
 	h.InitStorage(&env)
+	h.InitDB(&env)
 }
 
 func main() {
