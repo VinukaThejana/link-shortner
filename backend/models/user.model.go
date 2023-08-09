@@ -15,5 +15,7 @@ type User struct {
 	Verified   *bool      `gorm:"not null;default:false"`
 	CreatedAt  *time.Time `gorm:"not null;default:now()"`
 	UpdatedAt  *time.Time `gorm:"not null;default:now()"`
-	Sessions   []Sessions `gorm:"foreignKey:UserID"`
+
+	Sessions []Sessions `gorm:"foreignKey:UserID"`
+	Links    []Link     `gorm:"foreignKey:UserID"`
 }
