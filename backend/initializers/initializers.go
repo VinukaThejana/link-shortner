@@ -7,5 +7,6 @@ var log logger.Logger
 
 // H contains connections to various thrid party services
 type H struct {
-	S *Storage
+	S  *Storage
+	DB *DB
 }
