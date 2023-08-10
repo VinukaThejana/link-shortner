@@ -15,6 +15,9 @@ type Env struct {
 	RedisRatelimiterPort     int    `mapstructure:"REDIS_RATELIMITER_PORT" validate:"required"`
 
 	RedisSessionURL string `mapstructure:"REDIS_SESSION_URL" validate:"required"`
+
+	GithubClientID     string `mapstructure:"GITHUB_CLIENT_ID" validate:"required"`
+	GithubClientSecret string `mapstructure:"GITHUB_CLIENT_SECRET" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable
