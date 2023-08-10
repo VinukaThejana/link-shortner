@@ -13,6 +13,8 @@ type Env struct {
 	RedisRatelimiterPassword string `mapstructure:"REDIS_RATELIMITER_PASSWORD" validate:"required"`
 	RedisRatelimiterHost     string `mapstructure:"REDIS_RATELIMITER_HOST" validate:"required"`
 	RedisRatelimiterPort     int    `mapstructure:"REDIS_RATELIMITER_PORT" validate:"required"`
+
+	RedisSessionURL string `mapstructure:"REDIS_SESSION_URL" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable

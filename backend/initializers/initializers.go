@@ -9,4 +9,5 @@ var log logger.Logger
 type H struct {
 	S  *Storage
 	DB *DB
+	R  *Redis
 }
