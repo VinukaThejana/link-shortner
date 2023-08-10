@@ -12,6 +12,7 @@ import (
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/VinukaThejana/link-shortner/backend/models"
 	"github.com/VinukaThejana/link-shortner/backend/schemas"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -263,4 +264,26 @@ func validateToken(h *initializers.H, token, publicKey string) (*TokenDetails, *
 	}
 
 	return td, &val, nil
+}
+
+// DeleteExpiredTokens is a function that is used to delete expired tokens as a background task
+func (Token) DeleteExpiredTokens(h *initializers.H, userID uint64) {
+	var sessions []models.Sessions
+	err := h.DB.DB.Where("user_id = ? AND expires_at <= ?", userID, time.Now().UTC().Unix()).Error
+	if err != nil {
+		log.Error(err, nil)
+		return
+	}
+
+	if len(sessions) == 0 {
+		return
+	}
+
+	err = h.DB.DB.Where("1 = 1").Delete(&sessions).Error
+	if err != nil {
+		log.Error(err, nil)
+		return
+	}
+
+	return
 }
