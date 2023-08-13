@@ -19,3 +19,9 @@ type User struct {
 	Sessions []Sessions `gorm:"foreignKey:UserID"`
 	Links    []Link     `gorm:"foreignKey:UserID"`
 }
+
+const (
+	// revive:disable
+	GithubProvider = "github"
+	// revive:enable
+)
