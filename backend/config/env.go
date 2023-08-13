@@ -1,6 +1,10 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 // Env contains the env variables that are used throughout the backend
 type Env struct {
@@ -23,15 +27,15 @@ type Env struct {
 	GithubFromURL      string `mapstructure:"GITHUB_FROM_URL" validate:"required"`
 	GithubRootURL      string `mapstructure:"GITHUB_ROOT_URL" validate:"required"`
 
-	AccessTokenPrivateKey string `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY" validate:"required"`
-	AccessTokenPublicKey  string `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY" validate:"required"`
-	AccessTokenExpiredIn  string `mapstructure:"ACCESS_TOKEN_EXPIRED_IN" validate:"required"`
-	AccessTokenMaxAge     string `mapstructure:"ACCESS_TOKEN_MAXAGE" validate:"required"`
+	AccessTokenPrivateKey string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY" validate:"required"`
+	AccessTokenPublicKey  string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY" validate:"required"`
+	AccessTokenExpires    time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRED_IN" validate:"required"`
+	AccessTokenMaxAge     int           `mapstructure:"ACCESS_TOKEN_MAXAGE" validate:"required"`
 
-	RefreshTokenPrivateKey string `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY" validate:"required"`
-	RefreshTokenPublicKey  string `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY" validate:"required"`
-	RefreshTokenExpired    string `mapstructure:"REFRESH_TOKEN_EXPIRED_IN" validate:"required"`
-	RefreshTokenMaxAge     string `mapstructure:"REFRESH_TOKEN_MAXAGE" validate:"required"`
+	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY" validate:"required"`
+	RefreshTokenPublicKey  string        `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY" validate:"required"`
+	RefreshTokenExpires    time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRED_IN" validate:"required"`
+	RefreshTokenMaxAge     int           `mapstructure:"REFRESH_TOKEN_MAXAGE" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable
