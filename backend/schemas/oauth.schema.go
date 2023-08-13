@@ -2,7 +2,7 @@ package schemas
 
 // BasicOAuthProvider contains all the feilds realted to oauth providers
 type BasicOAuthProvider struct {
-	ID       uint64
+	ID       string
 	Name     string
 	Username string
 	Email    *string
