@@ -4,8 +4,9 @@ import "github.com/spf13/viper"
 
 // Env contains the env variables that are used throughout the backend
 type Env struct {
-	Domain string `mapstructure:"DOMAIN" validate:"required"`
-	Port   string `mapstructure:"PORT" validate:"required"`
+	Domain         string `mapstructure:"DOMAIN" validate:"required"`
+	FrontEndDomain string `mapstructure:"FRONT_END_DOMAIN" validate:"required"`
+	Port           string `mapstructure:"PORT" validate:"required"`
 
 	DSN string `mapstructure:"DB_USERNAME" validate:"required"`
 
