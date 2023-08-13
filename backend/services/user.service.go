@@ -25,6 +25,21 @@ func (User) IsUsernameAvailable(h *initializers.H, username string) (bool, error
 	return false, nil
 }
 
+// IsEmailAvailable is a fucntion to check wether the email address is available and wether the concerned email address is verified or not
+func (User) IsEmailAvailable(h *initializers.H, email string) (id *uint64, available bool, verified bool, err error) {
+	var user models.User
+	err = h.DB.DB.Select("id", "email", "verified").Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return nil, false, false, err
+		}
+
+		return nil, true, false, err
+	}
+
+	return &user.ID, false, *user.Verified, err
+}
+
 // Create is a function that is used to create a newUser in the database
 func (User) Create(h *initializers.H, user models.User) (newUser models.User, err error) {
 	newUser = user
