@@ -22,6 +22,16 @@ type Env struct {
 	GithubRedirectURL  string `mapstructure:"GITHUB_REDIRECT_URL" validate:"required"`
 	GithubFromURL      string `mapstructure:"GITHUB_FROM_URL" validate:"required"`
 	GithubRootURL      string `mapstructure:"GITHUB_ROOT_URL" validate:"required"`
+
+	AccessTokenPrivateKey string `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY" validate:"required"`
+	AccessTokenPublicKey  string `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY" validate:"required"`
+	AccessTokenExpiredIn  string `mapstructure:"ACCESS_TOKEN_EXPIRED_IN" validate:"required"`
+	AccessTokenMaxAge     string `mapstructure:"ACCESS_TOKEN_MAXAGE" validate:"required"`
+
+	RefreshTokenPrivateKey string `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY" validate:"required"`
+	RefreshTokenPublicKey  string `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY" validate:"required"`
+	RefreshTokenExpired    string `mapstructure:"REFRESH_TOKEN_EXPIRED_IN" validate:"required"`
+	RefreshTokenMaxAge     string `mapstructure:"REFRESH_TOKEN_MAXAGE" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable
