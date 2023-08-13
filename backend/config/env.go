@@ -36,6 +36,8 @@ type Env struct {
 	RefreshTokenPublicKey  string        `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY" validate:"required"`
 	RefreshTokenExpires    time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRED_IN" validate:"required"`
 	RefreshTokenMaxAge     int           `mapstructure:"REFRESH_TOKEN_MAXAGE" validate:"required"`
+
+	SessionTokenSecret string `mapstructure:"SESSION_TOKEN_SECRET" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable
