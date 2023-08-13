@@ -18,6 +18,9 @@ type Env struct {
 
 	GithubClientID     string `mapstructure:"GITHUB_CLIENT_ID" validate:"required"`
 	GithubClientSecret string `mapstructure:"GITHUB_CLIENT_SECRET" validate:"required"`
+	GithubRedirectURL  string `mapstructure:"GITHUB_REDIRECT_URL" validate:"required"`
+	GithubFromURL      string `mapstructure:"GITHUB_FROM_URL" validate:"required"`
+	GithubRootURL      string `mapstructure:"GITHUB_ROOT_URL" validate:"required"`
 }
 
 // Load is a function that loads all the env variables from relevant files and the enviroment to the env variable
