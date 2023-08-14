@@ -8,6 +8,7 @@ type User struct {
 	ID         uint64     `gorm:"primaryKey;autoIncrement:true"`
 	Name       string     `gorm:"type:varchar(100);not null"`
 	Username   string     `gorm:"type:varchar(100);uniqueIndex;not null"`
+	PhotoURL   string     `gorm:"type:varchar(200);not null"`
 	Email      string     `gorm:"type:varchar(100);uniqueIndex"`
 	Role       *string    `gorm:"type:varchar(50);default:'user';not null"`
 	Provider   *string    `gorm:"type:varchar(50);default:'local';not null"`
