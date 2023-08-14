@@ -291,6 +291,7 @@ func (Token) CreateSessionToken(h *initializers.H, user models.User, privateKey 
 	claims["nbf"] = now.Unix()
 	claims["name"] = user.Name
 	claims["username"] = user.Username
+	claims["photo_url"] = user.PhotoURL
 	claims["email"] = user.Email
 	claims["role"] = *user.Role
 	claims["provider"] = *user.Provider
@@ -318,6 +319,32 @@ func (Token) ValidateSessionToken(tokenStr, privateKey string) (*jwt.Token, erro
 	}
 
 	return token, nil
+}
+
+// SessionToken is a function that conatins actions related to the user session token
+type SessionToken struct{}
+
+// GetUserDetails is a function that allows to get the user details from the session token
+func (SessionToken) GetUserDetails(token *jwt.Token) (user *schemas.User, err error) {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("Error getting the claims from the token")
+	}
+	userID, err := strconv.ParseUint(claims["sub"].(string), 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &schemas.User{
+		ID:         userID,
+		Username:   claims["username"].(string),
+		Name:       claims["name"].(string),
+		Email:      claims["email"].(string),
+		PhotoURL:   claims["photo_url"].(string),
+		Role:       claims["role"].(string),
+		Provider:   claims["provider"].(string),
+		ProviderID: claims["provider_id"].(string),
+	}, nil
 }
 
 // DeleteExpiredTokens is a function that is used to delete expired tokens as a background task
