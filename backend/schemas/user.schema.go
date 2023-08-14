@@ -8,10 +8,14 @@ import (
 
 // User contians the most essential details of the user that should be available to the public
 type User struct {
-	ID       uint64 `json:"id"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	ID         uint64 `json:"id"`
+	Name       string `json:"name"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	PhotoURL   string `json:"photo_url"`
+	Role       string `json:"role"`
+	Provider   string `json:"provider"`
+	ProviderID string `json:"provider_id"`
 }
 
 // UserResponse the data that the user should receive when the user data is requested
