@@ -14,8 +14,8 @@ type User struct {
 	Provider   *string    `gorm:"type:varchar(50);default:'local';not null"`
 	ProviderID string     `gorm:"type:varchar(100)"`
 	Verified   *bool      `gorm:"not null;default:false"`
-	CreatedAt  *time.Time `gorm:"not null;default:now()"`
-	UpdatedAt  *time.Time `gorm:"not null;default:now()"`
+	CreatedAt  *time.Time `gorm:"autoCreateTime:true;not null"`
+	UpdatedAt  *time.Time `gorm:"autoUpdateTime:true;not null"`
 
 	Sessions []Sessions `gorm:"foreignKey:UserID"`
 	Links    []Link     `gorm:"foreignKey:UserID"`

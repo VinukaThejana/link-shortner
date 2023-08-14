@@ -11,6 +11,6 @@ type Sessions struct {
 	Location  string
 	Device    string
 	OS        string
-	LoginAt   time.Time `gorm:"not null;default:now()"`
+	LoginAt   time.Time `gorm:"autoCreateTime:true;not null"`
 	ExpiresAt int64     `gorm:"not null"`
 }
