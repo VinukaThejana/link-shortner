@@ -139,7 +139,7 @@ func (Token) CreateAccessToken(h *initializers.H, userID uint64, privateKey stri
 	claims["token_uuid"] = td.TokenUUID
 	claims["exp"] = td.ExpiresIn
 	claims["iat"] = now.Unix()
-	claims["ndf"] = now.Unix()
+	claims["nbf"] = now.Unix()
 
 	*td.Token, err = jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(key)
 	if err != nil {
@@ -264,6 +264,60 @@ func validateToken(h *initializers.H, token, publicKey string) (*TokenDetails, *
 	}
 
 	return td, &val, nil
+}
+
+// CreateSessionToken is a function that is used to create a new session token for the user
+func (Token) CreateSessionToken(h *initializers.H, user models.User, privateKey string, ttl time.Duration) (*TokenDetails, error) {
+	uid, err := uuid.NewUUID()
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().UTC()
+	td := &TokenDetails{
+		ExpiresIn: new(int64),
+		Token:     new(string),
+	}
+
+	*td.ExpiresIn = now.Add(ttl).Unix()
+	td.TokenUUID = uid.String()
+	td.UserID = user.ID
+
+	claims := make(jwt.MapClaims)
+	claims["sub"] = user.ID
+	claims["token_uuid"] = td.TokenUUID
+	claims["exp"] = td.ExpiresIn
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
+	claims["name"] = user.Name
+	claims["username"] = user.Username
+	claims["email"] = user.Email
+	claims["role"] = *user.Role
+	claims["provider"] = *user.Provider
+	claims["provider_id"] = user.ProviderID
+
+	*td.Token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(privateKey))
+	if err != nil {
+		return nil, err
+	}
+
+	return td, nil
+}
+
+// ValidateSessionToken is a function that is used to validate the session token
+func (Token) ValidateSessionToken(tokenStr, privateKey string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method")
+		}
+
+		return []byte(privateKey), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
 }
 
 // DeleteExpiredTokens is a function that is used to delete expired tokens as a background task
