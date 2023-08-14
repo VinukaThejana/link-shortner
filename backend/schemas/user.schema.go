@@ -8,7 +8,7 @@ import (
 
 // User contians the most essential details of the user that should be available to the public
 type User struct {
-	ID       string `json:"id"`
+	ID       uint64 `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
