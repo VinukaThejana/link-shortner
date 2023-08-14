@@ -11,6 +11,10 @@ type User struct{}
 
 // IsUsernameAvailable is a function that is used to check if wether a given username is available or not
 // within the platform
+//
+// returns `true`  - if the username is free to use
+//
+// returns `false` - if the username is not free to use
 func (User) IsUsernameAvailable(h *initializers.H, username string) (bool, error) {
 	var user models.User
 	err := h.DB.DB.Select("username").Where("username = ?", username).First(&user).Error
@@ -19,25 +23,29 @@ func (User) IsUsernameAvailable(h *initializers.H, username string) (bool, error
 			return false, err
 		}
 
-		return true, nil
+		return false, nil
 	}
 
-	return false, nil
+	return true, nil
 }
 
 // IsEmailAvailable is a fucntion to check wether the email address is available and wether the concerned email address is verified or not
-func (User) IsEmailAvailable(h *initializers.H, email string) (id *uint64, available bool, verified bool, err error) {
+//
+// returns `true`  - if the email is free to use
+//
+// returns `false` - if the email is not free to use
+func (User) IsEmailAvailable(h *initializers.H, email string) (id *uint64, isAvailable bool, isVerified bool, provider *string, err error) {
 	var user models.User
 	err = h.DB.DB.Select("id", "email", "verified").Where("email = ?", email).First(&user).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
-			return nil, false, false, err
+			return nil, false, false, nil, err
 		}
 
-		return nil, true, false, err
+		return nil, true, false, nil, nil
 	}
 
-	return &user.ID, false, *user.Verified, err
+	return &user.ID, false, *user.Verified, user.Provider, nil
 }
 
 // Create is a function that is used to create a newUser in the database
