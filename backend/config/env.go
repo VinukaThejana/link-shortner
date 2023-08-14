@@ -12,7 +12,7 @@ type Env struct {
 	FrontEndDomain string `mapstructure:"FRONT_END_DOMAIN" validate:"required"`
 	Port           string `mapstructure:"PORT" validate:"required"`
 
-	DSN string `mapstructure:"DB_USERNAME" validate:"required"`
+	DSN string `mapstructure:"DSN" validate:"required"`
 
 	RedisRatelimiterUsername string `mapstructure:"REDIS_RATELIMITER_USERNAME" validate:"required"`
 	RedisRatelimiterPassword string `mapstructure:"REDIS_RATELIMITER_PASSWORD" validate:"required"`
