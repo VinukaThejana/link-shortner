@@ -267,7 +267,7 @@ func validateToken(h *initializers.H, token, publicKey string) (*TokenDetails, *
 }
 
 // CreateSessionToken is a function that is used to create a new session token for the user
-func (Token) CreateSessionToken(h *initializers.H, user models.User, privateKey string, ttl time.Duration) (*TokenDetails, error) {
+func (Token) CreateSessionToken(user models.User, privateKey string, ttl time.Duration) (*TokenDetails, error) {
 	uid, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
