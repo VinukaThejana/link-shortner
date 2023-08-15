@@ -6,6 +6,7 @@ type BasicOAuthProvider struct {
 	Name     string
 	Username string
 	Email    *string
+	PhotoURL string
 }
 
 // Github struct contains the schema of the data that is provided by Github
