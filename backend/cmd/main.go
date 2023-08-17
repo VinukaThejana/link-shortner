@@ -24,6 +24,7 @@ var (
 
 	auth  controllers.Auth
 	oauth controllers.OAuth
+	user  controllers.User
 )
 
 func init() {
@@ -79,6 +80,11 @@ func main() {
 	})
 	oauthG.Get("/login/github", func(c *fiber.Ctx) error {
 		return oauth.RedirectToGitHubOAuthFlow(c, &env)
+	})
+
+	userG := app.Group("/user")
+	userG.Get("/me", func(c *fiber.Ctx) error {
+		return user.GetMe(c)
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
