@@ -20,3 +20,15 @@ var (
 	Okay                         = "okay"
 	//revive:enable
 )
+
+// CheckTokenError is a struct to check token related errors
+type CheckTokenError struct{}
+
+// Expired is a function to check wether the token has expired
+func (CheckTokenError) Expired(err error) bool {
+	if err.Error() == "token has invalid claims: token is expired" {
+		return true
+	}
+
+	return false
+}
