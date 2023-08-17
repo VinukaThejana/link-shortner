@@ -18,6 +18,7 @@ func create(h *initializers.H, profile schemas.BasicOAuthProvider, provider stri
 
 	newUser.Name = profile.Name
 	newUser.Username = profile.Username
+	newUser.PhotoURL = profile.PhotoURL
 	newUser.Verified = &verified
 	newUser.Provider = &provider
 	newUser.ProviderID = profile.ID
@@ -38,7 +39,13 @@ func create(h *initializers.H, profile schemas.BasicOAuthProvider, provider stri
 func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user models.User, err error) {
 	provider := models.GithubProvider
 
-	err = h.DB.DB.Where("provider = ?", provider).Where("provider_id = ?", fmt.Sprint(profile.ID)).First(&user).Error
+	err = h.DB.DB.
+		Where("provider = ?", provider).
+		Where("provider_id = ?", fmt.Sprint(profile.ID)).
+		Select("id", "name", "username", "photo_url", "email", "role", "provider", "provider_id", "verified").
+		First(&user).
+		Error
+	fmt.Println("The error is : ", err)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return models.User{}, err
@@ -60,6 +67,7 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 				Name:     profile.Name,
 				Username: profile.Username,
 				Email:    profile.Email,
+				PhotoURL: profile.AvatarURL,
 			}, provider)
 			if err != nil {
 				return models.User{}, err
@@ -89,6 +97,7 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 			Name:     profile.Name,
 			Username: profile.Username,
 			Email:    profile.Email,
+			PhotoURL: profile.AvatarURL,
 		}, provider)
 		if err != nil {
 			return models.User{}, err
