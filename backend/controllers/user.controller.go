@@ -3,9 +3,11 @@ package controllers
 import (
 	"github.com/VinukaThejana/link-shortner/backend/errors"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
+	"github.com/VinukaThejana/link-shortner/backend/models"
 	"github.com/VinukaThejana/link-shortner/backend/services"
 	"github.com/VinukaThejana/link-shortner/backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // User contains all the user related controllers
@@ -50,5 +52,63 @@ func (User) CheckUsername(c *fiber.Ctx, h *initializers.H) error {
 
 	return c.Status(fiber.StatusOK).JSON(response{
 		Available: available,
+	})
+}
+
+// UpdateEmail is a function that is used to update the email of the user
+func (User) UpdateEmail(c *fiber.Ctx, h *initializers.H) error {
+	var payload struct {
+		Email string `json:"email" validate:"required,email"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	var user models.User
+	err := h.DB.DB.First(&user, "email = ?", payload.Email).Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			log.Error(err, nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(response{
+				Status: errors.ErrInternalServerError.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusOK).JSON(response{
+			Status: errors.ErrEmailAlreadyUsed.Error(),
+		})
+	}
+
+	userD, err := utils.Session{}.Get(c)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	verifed := true
+	err = h.DB.DB.Model(&models.User{}).Where("id = ?", userD.ID).Updates(models.User{
+		Email:    payload.Email,
+		Verified: &verifed,
+	}).Error
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response{
+		Status: errors.Okay,
 	})
 }
