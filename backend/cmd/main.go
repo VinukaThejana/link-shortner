@@ -69,6 +69,9 @@ func main() {
 	authG.Get("/logout", func(c *fiber.Ctx) error {
 		return auth.Logout(c, &h, &env)
 	})
+	authG.Get("/refresh", func(c *fiber.Ctx) error {
+		return auth.RefreshToken(c, &h, &env)
+	})
 
 	oauthG := app.Group("/oauth")
 	oauthG.Get("/callback/github", func(c *fiber.Ctx) error {
