@@ -23,10 +23,10 @@ func (User) IsUsernameAvailable(h *initializers.H, username string) (bool, error
 			return false, err
 		}
 
-		return false, nil
+		return true, nil
 	}
 
-	return true, nil
+	return false, nil
 }
 
 // IsEmailAvailable is a fucntion to check wether the email address is available and wether the concerned email address is verified or not
