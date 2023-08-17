@@ -9,6 +9,7 @@ import (
 	"github.com/VinukaThejana/link-shortner/backend/config"
 	"github.com/VinukaThejana/link-shortner/backend/controllers"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
+	"github.com/VinukaThejana/link-shortner/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -82,9 +83,16 @@ func main() {
 		return oauth.RedirectToGitHubOAuthFlow(c, &env)
 	})
 
-	userG := app.Group("/user")
+	userG := app.Group("/user", func(c *fiber.Ctx) error {
+		return middleware.Auth{}.CheckAuth(c, &h, &env)
+	})
 	userG.Get("/me", func(c *fiber.Ctx) error {
 		return user.GetMe(c)
+	})
+	userG.Route("/check", func(router fiber.Router) {
+		router.Post("/username", func(c *fiber.Ctx) error {
+			return user.CheckUsername(c, &h)
+		})
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
