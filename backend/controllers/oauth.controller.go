@@ -41,6 +41,8 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 	state := c.Query("state")
 	if state == "" {
 		state = env.FrontEndDomain
+	} else if state == env.Domain {
+		state = env.FrontEndDomain
 	}
 
 	accessToken, err := utils.OAuth{}.GetGithubAccessToken(code, env)
@@ -117,7 +119,7 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 		MaxAge:   env.AccessTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
-		Domain:   env.FrontEndDomain,
+		Domain:   "localhost",
 	})
 
 	c.Cookie(&fiber.Cookie{
@@ -127,20 +129,18 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 		MaxAge:   env.RefreshTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
-		Domain:   env.FrontEndDomain,
+		Domain:   "localhost",
 	})
 
 	c.Cookie(&fiber.Cookie{
 		Name:     "session",
 		Value:    *sessionTokenDetails.Token,
 		Path:     "/",
-		MaxAge:   env.AccessTokenMaxAge * 60,
+		MaxAge:   env.RefreshTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
-		Domain:   env.FrontEndDomain,
+		Domain:   "localhost",
 	})
 
-	return c.Status(fiber.StatusOK).JSON(response{
-		Status: errors.Okay,
-	})
+	return c.Redirect(state)
 }
