@@ -7,6 +7,7 @@ import (
 
 	"github.com/VinukaThejana/go-utils/logger"
 	"github.com/VinukaThejana/link-shortner/backend/config"
+	"github.com/VinukaThejana/link-shortner/backend/controllers"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -20,6 +21,9 @@ var (
 
 	env config.Env
 	h   initializers.H
+
+	auth  controllers.Auth
+	oauth controllers.OAuth
 )
 
 func init() {
@@ -27,6 +31,7 @@ func init() {
 
 	h.InitStorage(&env)
 	h.InitDB(&env)
+	h.InitRedis(&env)
 }
 
 func main() {
@@ -56,6 +61,22 @@ func main() {
 	app.Get("/metrics", monitor.New(monitor.Config{
 		Title: "auth",
 	}))
+
+	authG := app.Group("/auth")
+	authG.Get("/login", func(c *fiber.Ctx) error {
+		return oauth.RedirectToGitHubOAuthFlow(c, &env)
+	})
+	authG.Get("/logout", func(c *fiber.Ctx) error {
+		return auth.Logout(c, &h, &env)
+	})
+
+	oauthG := app.Group("/oauth")
+	oauthG.Get("/callback/github", func(c *fiber.Ctx) error {
+		return oauth.GithubOAuthCalback(c, &h, &env)
+	})
+	oauthG.Get("/login/github", func(c *fiber.Ctx) error {
+		return oauth.RedirectToGitHubOAuthFlow(c, &env)
+	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
 }
