@@ -156,6 +156,7 @@ func (Token) CreateAccessToken(h *initializers.H, userID uint64, privateKey stri
 func (Token) ValidateRefreshToken(h *initializers.H, token, publicKey string) (*TokenDetails, *schemas.RefreshTokenDetails, error) {
 	td, val, err := validateToken(h, token, publicKey)
 	if err != nil {
+		fmt.Println("The error is from here in line 159")
 		return nil, nil, err
 	} else if val == nil {
 		return nil, nil, errors.ErrInternalServerError
@@ -226,7 +227,7 @@ func validateToken(h *initializers.H, token, publicKey string) (*TokenDetails, *
 		return nil, nil, err
 	}
 
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(decodedPublicKey)
+	key, err := jwt.ParseRSAPublicKeyFromPEM(decodedPublicKey)
 	if err != nil {
 		return nil, nil, err
 	}
