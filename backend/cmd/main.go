@@ -98,6 +98,9 @@ func main() {
 		router.Post("/email", func(c *fiber.Ctx) error {
 			return user.UpdateEmail(c, &h)
 		})
+		router.Post("/username", func(c *fiber.Ctx) error {
+			return user.UpdateUsername(c, &h)
+		})
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)

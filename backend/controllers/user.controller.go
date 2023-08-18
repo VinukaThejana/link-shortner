@@ -112,3 +112,57 @@ func (User) UpdateEmail(c *fiber.Ctx, h *initializers.H) error {
 		Status: errors.Okay,
 	})
 }
+
+// UpdateUsername is a function to change the username of the username to another valid username
+func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
+	var payload struct {
+		Username string `json:"username" validate:"min=3;max=15"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	available, err := services.User{}.IsUsernameAvailable(h, payload.Username)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	if !available {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrUsernameAlreadyUsed.Error(),
+		})
+	}
+
+	userD, err := utils.Session{}.Get(c)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	err = h.DB.DB.Model(&models.User{}).Where("id = ?", userD.ID).Update("username", payload.Username).Error
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response{
+		Status: errors.Okay,
+	})
+}
