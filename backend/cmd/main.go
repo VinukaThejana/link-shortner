@@ -101,6 +101,9 @@ func main() {
 		router.Post("/username", func(c *fiber.Ctx) error {
 			return user.UpdateUsername(c, &h)
 		})
+		router.Post("/name", func(c *fiber.Ctx) error {
+			return user.UpdateName(c, &h)
+		})
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
