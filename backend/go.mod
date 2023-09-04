@@ -9,6 +9,7 @@ require (
 	github.com/gofiber/storage/redis v1.3.4
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.0
+	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/spf13/viper v1.16.0
 	gorm.io/driver/mysql v1.5.1
@@ -29,8 +30,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/leodido/go-urn v1.2.3 // indirect
-	github.com/lithammer/shortuuid v3.0.0+incompatible // indirect
-	github.com/lithammer/shortuuid/v4 v4.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
