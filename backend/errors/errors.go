@@ -17,6 +17,7 @@ var (
 	ErrEmailConfirmationExpired  = fmt.Errorf("email_confirmation_expired")
 	ErrHaveAnAccountWithTheEmail = fmt.Errorf("already_have_an_account")
 	ErrAddAUsername              = fmt.Errorf("add_a_username")
+	ErrKeyAlreadyUsed            = fmt.Errorf("key_already_used")
 	Okay                         = "okay"
 	//revive:enable
 )
