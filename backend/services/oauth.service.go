@@ -11,7 +11,9 @@ import (
 )
 
 // Github contains Github related OAuth operations
-type Github struct{}
+type Github struct {
+	H *initializers.H
+}
 
 func create(h *initializers.H, profile schemas.BasicOAuthProvider, provider string) (newUser models.User, err error) {
 	verified := true
@@ -27,7 +29,9 @@ func create(h *initializers.H, profile schemas.BasicOAuthProvider, provider stri
 		newUser.Email = *profile.Email
 	}
 
-	newUser, err = User{}.Create(h, newUser)
+	userS := User{H: h}
+
+	newUser, err = userS.Create(newUser)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -36,10 +40,10 @@ func create(h *initializers.H, profile schemas.BasicOAuthProvider, provider stri
 }
 
 // GithubOAuth is a function that is used to create a new Github user
-func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user models.User, err error) {
+func (g *Github) GithubOAuth(profile schemas.Github) (user models.User, err error) {
 	provider := models.GithubProvider
 
-	err = h.DB.DB.
+	err = g.H.DB.DB.
 		Where("provider = ?", provider).
 		Where("provider_id = ?", fmt.Sprint(profile.ID)).
 		Select("id", "name", "username", "photo_url", "email", "role", "provider", "provider_id", "verified").
@@ -51,8 +55,10 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 			return models.User{}, err
 		}
 
+		userS := User{H: g.H}
+
 		if profile.Email == nil {
-			ok, err := User{}.IsUsernameAvailable(h, profile.Username)
+			ok, err := userS.IsUsernameAvailable(profile.Username)
 			if err != nil {
 				return models.User{}, err
 			}
@@ -62,7 +68,7 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 				return models.User{}, errors.ErrBadRequest
 			}
 
-			user, err := create(h, schemas.BasicOAuthProvider{
+			user, err := create(g.H, schemas.BasicOAuthProvider{
 				ID:       fmt.Sprint(profile.ID),
 				Name:     profile.Name,
 				Username: profile.Username,
@@ -76,7 +82,7 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 			return user, nil
 		}
 
-		_, ok, verified, _, err := User{}.IsEmailAvailable(h, *profile.Email)
+		_, ok, verified, _, err := userS.IsEmailAvailable(*profile.Email)
 		if err != nil {
 			return models.User{}, err
 		}
@@ -92,7 +98,7 @@ func (Github) GithubOAuth(h *initializers.H, profile schemas.Github) (user model
 			return models.User{}, errors.ErrBadRequest
 		}
 
-		user, err := create(h, schemas.BasicOAuthProvider{
+		user, err := create(g.H, schemas.BasicOAuthProvider{
 			ID:       fmt.Sprint(profile.ID),
 			Name:     profile.Name,
 			Username: profile.Username,

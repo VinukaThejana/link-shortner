@@ -63,7 +63,9 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 
 	fmt.Println(*userDetails, userDetails.ID)
 
-	user, err := services.Github{}.GithubOAuth(h, *userDetails)
+	githubS := services.Github{H: h}
+
+	user, err := githubS.GithubOAuth(*userDetails)
 	if err != nil {
 		if err == errors.ErrBadRequest {
 			return c.Status(fiber.StatusBadRequest).JSON(response{

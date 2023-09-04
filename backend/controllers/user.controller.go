@@ -42,7 +42,9 @@ func (User) CheckUsername(c *fiber.Ctx, h *initializers.H) error {
 		Available bool `json:"available"`
 	}
 
-	available, err := services.User{}.IsUsernameAvailable(h, payload.Username)
+	userS := services.User{H: h}
+
+	available, err := userS.IsUsernameAvailable(payload.Username)
 	if err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
@@ -132,7 +134,9 @@ func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
-	available, err := services.User{}.IsUsernameAvailable(h, payload.Username)
+	userS := services.User{H: h}
+
+	available, err := userS.IsUsernameAvailable(payload.Username)
 	if err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
@@ -167,6 +171,7 @@ func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
 	})
 }
 
+// UpdateName is a function to update the name of the user
 func (User) UpdateName(c *fiber.Ctx, h *initializers.H) error {
 	var payload struct {
 		Name string `json:"name" validate:"required,min=3,max=50"`
