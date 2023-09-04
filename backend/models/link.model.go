@@ -6,5 +6,4 @@ type Link struct {
 	UserID uint64 `gorm:"not null"`
 	URL    string `gorm:"type:varchar(255);not null"`
 	Key    string `gorm:"type:varchar(100);uniqueIndex;not null"`
-	Hash   string `gorm:"type:varchar(100);uniqueIndex;not null"`
 }
