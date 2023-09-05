@@ -99,7 +99,7 @@ func (User) UpdateEmail(c *fiber.Ctx, h *initializers.H) error {
 	}
 
 	verifed := true
-	err = h.DB.DB.Model(&models.User{}).Where("id = ?", userD.ID).Updates(models.User{
+	err = h.DB.DB.Model(&models.User{}).Where(&models.User{ID: userD.ID}).Updates(models.User{
 		Email:    payload.Email,
 		Verified: &verifed,
 	}).Error
@@ -158,7 +158,7 @@ func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
-	err = h.DB.DB.Model(&models.User{}).Where("id = ?", userD.ID).Update("username", payload.Username).Error
+	err = h.DB.DB.Model(&models.User{}).Where(&models.User{ID: userD.ID}).Update("username", payload.Username).Error
 	if err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
@@ -198,7 +198,9 @@ func (User) UpdateName(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
-	err = h.DB.DB.Model(&models.User{}).Where("id = ?", userD.ID).Update("name = ?", payload.Name).Error
+	err = h.DB.DB.Model(&models.User{}).Where(&models.User{
+		ID: userD.ID,
+	}).Update("name = ?", payload.Name).Error
 	if err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{

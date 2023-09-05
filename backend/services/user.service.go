@@ -19,7 +19,7 @@ type User struct {
 // returns `false` - if the username is not free to use
 func (u *User) IsUsernameAvailable(username string) (bool, error) {
 	var user models.User
-	err := u.H.DB.DB.Select("username").Where("username = ?", username).First(&user).Error
+	err := u.H.DB.DB.Select("username").Where(&models.User{Username: username}).First(&user).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return false, err
@@ -38,7 +38,7 @@ func (u *User) IsUsernameAvailable(username string) (bool, error) {
 // returns `false` - if the email is not free to use
 func (u *User) IsEmailAvailable(email string) (id *uint64, isAvailable bool, isVerified bool, provider *string, err error) {
 	var user models.User
-	err = u.H.DB.DB.Select("id", "email", "verified").Where("email = ?", email).First(&user).Error
+	err = u.H.DB.DB.Select("id", "email", "verified").Where(&models.User{Email: email}).First(&user).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return nil, false, false, nil, err
