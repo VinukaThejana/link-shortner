@@ -50,7 +50,7 @@ func (l *Link) Create(user *schemas.User, url, key string) error {
 // GetLink is a function to get the url of the relevant key
 func (l *Link) GetLink(key string) (url *string, err error) {
 	var link models.Link
-	err = l.H.DB.DB.Select("url").Where("key = ?", key).First(&link).Error
+	err = l.H.DB.DB.Select("url").Where(&models.Link{Key: key}).First(&link).Error
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (l *Link) GetLink(key string) (url *string, err error) {
 
 // GetLinks is a function to get all the links relevant to the user
 func (l *Link) GetLinks(user *schemas.User) (links []models.Link, err error) {
-	err = l.H.DB.DB.Where("id = ?", user.ID).Find(&links).Error
+	err = l.H.DB.DB.Where(&models.Link{UserID: user.ID}).Find(&links).Error
 	if err != nil {
 		return []models.Link{}, err
 	}
@@ -70,7 +70,7 @@ func (l *Link) GetLinks(user *schemas.User) (links []models.Link, err error) {
 
 // DeleteLink is a function to delete a link with the specific key
 func (l *Link) DeleteLink(user *schemas.User, key string) error {
-	err := l.H.DB.DB.Where("key = ?", key).Where("user_id = ?", user.ID).Delete(&models.Link{}).Error
+	err := l.H.DB.DB.Where(&models.Link{Key: key, UserID: user.ID}).Delete(&models.Link{}).Error
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (l *Link) DeleteLink(user *schemas.User, key string) error {
 
 // DeleteLinks is a function to delete all the links that belong to a user
 func (l *Link) DeleteLinks(user *schemas.User) error {
-	err := l.H.DB.DB.Where("user_id = ?", user.ID).Delete(&models.Link{}).Error
+	err := l.H.DB.DB.Where(&models.Link{UserID: user.ID}).Delete(&models.Link{}).Error
 	if err != nil {
 		return err
 	}
