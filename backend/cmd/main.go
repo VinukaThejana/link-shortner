@@ -26,6 +26,7 @@ var (
 	auth  controllers.Auth
 	oauth controllers.OAuth
 	user  controllers.User
+	links controllers.Links
 )
 
 func init() {
@@ -103,6 +104,24 @@ func main() {
 		})
 		router.Post("/name", func(c *fiber.Ctx) error {
 			return user.UpdateName(c, &h)
+		})
+	})
+
+	linksG := app.Group("/links", func(c *fiber.Ctx) error {
+		return middleware.Auth{}.CheckAuth(c, &h, &env)
+	})
+	linksG.Get("/", func(c *fiber.Ctx) error {
+		return links.GetLinks(c, &h)
+	})
+	linksG.Post("/new", func(c *fiber.Ctx) error {
+		return links.New(c, &h)
+	})
+	linksG.Route("/delete", func(router fiber.Router) {
+		router.Post("/", func(c *fiber.Ctx) error {
+			return links.DeleteLink(c, &h)
+		})
+		router.Post("/all", func(c *fiber.Ctx) error {
+			return links.DeleteLinks(c, &h)
 		})
 	})
 
