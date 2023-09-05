@@ -331,7 +331,7 @@ func (SessionToken) GetUserDetails(token *jwt.Token) (user *schemas.User, err er
 	if !ok {
 		return nil, fmt.Errorf("Error getting the claims from the token")
 	}
-	userID, err := strconv.ParseUint(claims["sub"].(string), 10, 64)
+	userID := uint64(claims["sub"].(float64))
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"strconv"
-
 	"github.com/VinukaThejana/link-shortner/backend/schemas"
 	"github.com/gofiber/fiber/v2"
 )
@@ -29,10 +27,7 @@ func (Session) Add(c *fiber.Ctx, user *schemas.User) {
 
 // Get the user from the go fiber ctx session
 func (Session) Get(c *fiber.Ctx) (*schemas.User, error) {
-	userID, err := strconv.ParseUint(c.Locals("id").(string), 10, 64)
-	if err != nil {
-		return nil, err
-	}
+	userID := c.Locals("id").(uint64)
 
 	return &schemas.User{
 		ID:         userID,
