@@ -19,7 +19,7 @@ type Link struct {
 // returns false - If the key is not free to use
 func (l *Link) IsKeyAvailable(key string) (bool, error) {
 	var link models.Link
-	err := l.H.DB.DB.Select("url").Where("key = ?", key).First(&link).Error
+	err := l.H.DB.DB.Select("url").Where(&models.Link{Key: key}).First(&link).Error
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return false, err
