@@ -11,6 +11,9 @@ dependencies:
   astro:
     specifier: ^2.10.3
     version: 2.10.3
+  jose:
+    specifier: ^4.14.6
+    version: 4.14.6
   tailwindcss:
     specifier: ^3.0.24
     version: 3.3.3
@@ -1963,6 +1966,10 @@ packages:
   /jiti@1.19.1:
     resolution: {integrity: sha512-oVhqoRDaBXf7sjkll95LHVS6Myyyb1zaunVwk4Z0+WPSW4gjS0pl01zYKHScTuyEhQsFxV5L4DR5r+YqSyqyyg==}
     hasBin: true
+    dev: false
+
+  /jose@4.14.6:
+    resolution: {integrity: sha512-EqJPEUlZD0/CSUMubKtMaYUOtWe91tZXTWMJZoKSbLk+KtdhNdcvppH8lA9XwVu2V4Ailvsj0GBZJ2ZwDjfesQ==}
     dev: false
 
   /js-tokens@4.0.0:
