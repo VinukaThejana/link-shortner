@@ -18,6 +18,7 @@ var (
 	ErrHaveAnAccountWithTheEmail = fmt.Errorf("already_have_an_account")
 	ErrAddAUsername              = fmt.Errorf("add_a_username")
 	ErrKeyAlreadyUsed            = fmt.Errorf("key_already_used")
+	ErrKeyDoesNotExsist          = fmt.Errorf("key_does_not_exsist")
 	Okay                         = "okay"
 	//revive:enable
 )
