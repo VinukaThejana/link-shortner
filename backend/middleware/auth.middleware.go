@@ -45,7 +45,7 @@ func (Auth) CheckAuth(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
 			})
 		}
 
-		if ok := (errors.CheckTokenError{}.Expired(err)); !ok {
+		if ok := (errors.CheckTokenError{}.Expired(err)); ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(response{
 				Status: errors.ErrAccessTokenExpired.Error(),
 			})
