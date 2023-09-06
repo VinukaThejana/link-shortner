@@ -15,15 +15,20 @@ export const Profile = ({ user }: { user: User | null }) => {
             tabIndex={0}
             className="p-2 mt-3 w-52 border shadow menu menu-sm dropdown-content z-[1] bg-base-100 rounded-box border-slate-800"
           >
-            <li><a>Logout</a></li>
+            <li>
+              <button
+              >
+                Logout
+              </button>
+            </li>
           </ul>
         </div>
       </>
       ) : (
         <>
-          <button className="btn btn-ghost">
+          <a className="btn btn-ghost" href="http://localhost:8080/auth/login">
             Login
-          </button>
+          </a>
         </>
       )}
     </>
