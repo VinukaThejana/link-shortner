@@ -9,11 +9,13 @@ interface Props {
 const { user } = Astro.props;
 ---
 
-<nav class="border-b navbar bg-base-100 border-b-slate-600">
+<nav
+  class="border-b navbar bg-base-100 dark:border-b-slate-600 border-b-slate-200"
+>
   <div class="flex-1">
     <a class="text-xl normal-case btn btn-ghost">Link shortner</a>
   </div>
   <div class="flex-none">
-    <Profile user={user} />
+    <Profile user={user} client:only="react" />
   </div>
 </nav>
