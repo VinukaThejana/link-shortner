@@ -1,7 +1,7 @@
 
 export const getBackendPath = (path: string, params?: string[]): string => {
   if (!Array.isArray(params)) {
-    return `${import.meta.env.BACKEND}${path}`
+    return `${import.meta.env.PUBLIC_BACKEND}${path}`
   }
 
   var p = "";
@@ -15,5 +15,5 @@ export const getBackendPath = (path: string, params?: string[]): string => {
     p += `${param}&`
   }
 
-  return `${import.meta.env.BACKEND}${path}?${p}`
+  return `${import.meta.env.PUBLIC_BACKEND}${path}?${p}`
 }
