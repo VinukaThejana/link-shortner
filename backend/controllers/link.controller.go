@@ -13,10 +13,45 @@ import (
 // Links contains all the operations that are related to links
 type Links struct{}
 
+// CheckKey is a function that is used to check wether a given key is used previously
+// in the database
+func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
+	var payload struct {
+		Key string `json:"key" validate:"required,min=3,max=20"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	linkS := services.Link{}
+
+	ok, err := linkS.IsKeyAvailable(payload.Key)
+	if err != nil {
+		log.Error(err, nil)
+		c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"available": ok,
+	})
+}
+
 // New create a new link with the key or without the key
 func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 	var payload struct {
-		Link string `json:"link" validate:"required,url,min=3"`
+		Link string `json:"link"`
 		Key  string `json:"key"`
 	}
 
