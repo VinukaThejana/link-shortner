@@ -7,6 +7,6 @@ declare namespace App {
       name: string
       photo_url: string
       username: string
-    }
+    } | null
   }
 }
