@@ -42,8 +42,8 @@ func main() {
 
 	app.Use(fiberLogger.New())
 	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "*",
-		AllowOrigins:     "*",
+		AllowHeaders:     "Origin, Content-Type, Accept",
+		AllowOrigins:     env.FrontEndDomain,
 		AllowCredentials: true,
 		AllowMethods:     "*",
 	}))
