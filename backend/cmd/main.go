@@ -90,11 +90,6 @@ func main() {
 	userG.Get("/me", func(c *fiber.Ctx) error {
 		return user.GetMe(c)
 	})
-	userG.Route("/check", func(router fiber.Router) {
-		router.Post("/username", func(c *fiber.Ctx) error {
-			return user.CheckUsername(c, &h)
-		})
-	})
 	userG.Route("/update", func(router fiber.Router) {
 		router.Post("/email", func(c *fiber.Ctx) error {
 			return user.UpdateEmail(c, &h)
@@ -107,18 +102,16 @@ func main() {
 		})
 	})
 
-	linksG := app.Group("/links")
-	authedLinkG := linksG.Group("/", func(c *fiber.Ctx) error {
+	linksG := app.Group("/links", func(c *fiber.Ctx) error {
 		return middleware.Auth{}.CheckAuth(c, &h, &env)
 	})
-
-	authedLinkG.Get("/", func(c *fiber.Ctx) error {
+	linksG.Get("/", func(c *fiber.Ctx) error {
 		return links.GetLinks(c, &h)
 	})
-	authedLinkG.Post("/new", func(c *fiber.Ctx) error {
+	linksG.Post("/new", func(c *fiber.Ctx) error {
 		return links.New(c, &h)
 	})
-	authedLinkG.Route("/delete", func(router fiber.Router) {
+	linksG.Route("/delete", func(router fiber.Router) {
 		router.Post("/", func(c *fiber.Ctx) error {
 			return links.DeleteLink(c, &h)
 		})
@@ -126,8 +119,17 @@ func main() {
 			return links.DeleteLinks(c, &h)
 		})
 	})
-	linksG.Post("/check", func(c *fiber.Ctx) error {
-		return links.CheckKey(c, &h)
+
+	checkG := app.Group("/check")
+	checkG.Route("/users", func(router fiber.Router) {
+		router.Post("/username", func(c *fiber.Ctx) error {
+			return user.CheckUsername(c, &h)
+		})
+	})
+	checkG.Route("/links", func(router fiber.Router) {
+		router.Post("/key", func(c *fiber.Ctx) error {
+			return links.CheckKey(c, &h)
+		})
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
