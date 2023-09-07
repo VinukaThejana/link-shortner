@@ -20,16 +20,20 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 		Key string `json:"key" validate:"required,min=3,max=20"`
 	}
 
+	type res struct {
+		Available bool `json:"available"`
+	}
+
 	if err := c.BodyParser(&payload); err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusBadRequest).JSON(response{
-			Status: errors.ErrBadRequest.Error(),
+		return c.Status(fiber.StatusBadRequest).JSON(res{
+			Available: false,
 		})
 	}
 
 	if ok := log.Validate(payload); !ok {
-		return c.Status(fiber.StatusBadRequest).JSON(response{
-			Status: errors.ErrBadRequest.Error(),
+		return c.Status(fiber.StatusBadRequest).JSON(res{
+			Available: false,
 		})
 	}
 
@@ -38,13 +42,13 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 	ok, err := linkS.IsKeyAvailable(payload.Key)
 	if err != nil {
 		log.Error(err, nil)
-		c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
+		c.Status(fiber.StatusInternalServerError).JSON(res{
+			Available: false,
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"available": ok,
+	return c.Status(fiber.StatusOK).JSON(res{
+		Available: ok,
 	})
 }
 
