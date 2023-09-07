@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/VinukaThejana/link-shortner/backend/errors"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/VinukaThejana/link-shortner/backend/services"
@@ -24,6 +26,7 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 		Available bool `json:"available"`
 	}
 
+	fmt.Println("I am herer")
 	if err := c.BodyParser(&payload); err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusBadRequest).JSON(res{
@@ -37,7 +40,9 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
-	linkS := services.Link{}
+	linkS := services.Link{
+		H: h,
+	}
 
 	ok, err := linkS.IsKeyAvailable(payload.Key)
 	if err != nil {
