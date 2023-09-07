@@ -107,22 +107,27 @@ func main() {
 		})
 	})
 
-	linksG := app.Group("/links", func(c *fiber.Ctx) error {
+	linksG := app.Group("/links")
+	authedLinkG := linksG.Group("/", func(c *fiber.Ctx) error {
 		return middleware.Auth{}.CheckAuth(c, &h, &env)
 	})
-	linksG.Get("/", func(c *fiber.Ctx) error {
+
+	authedLinkG.Get("/", func(c *fiber.Ctx) error {
 		return links.GetLinks(c, &h)
 	})
-	linksG.Post("/new", func(c *fiber.Ctx) error {
+	authedLinkG.Post("/new", func(c *fiber.Ctx) error {
 		return links.New(c, &h)
 	})
-	linksG.Route("/delete", func(router fiber.Router) {
+	authedLinkG.Route("/delete", func(router fiber.Router) {
 		router.Post("/", func(c *fiber.Ctx) error {
 			return links.DeleteLink(c, &h)
 		})
 		router.Post("/all", func(c *fiber.Ctx) error {
 			return links.DeleteLinks(c, &h)
 		})
+	})
+	linksG.Post("/check", func(c *fiber.Ctx) error {
+		return links.CheckKey(c, &h)
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
