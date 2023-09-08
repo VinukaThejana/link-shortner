@@ -14,7 +14,7 @@ export const Profile = ({ user }: { user: User | null; }) => {
           </label>
           <ul
             tabIndex={0}
-            className="p-2 mt-3 w-52 border shadow menu menu-sm dropdown-content z-[1] bg-base-100 rounded-box border-slate-800"
+            className="p-2 mt-3 w-52 border shadow menu menu-sm dropdown-content z-[1] bg-base-100 rounded-box border-slate-300"
           >
             <li>
               <a href={getBackendPath("/auth/logout", [`state=${encodeURI(window.location.href)}`])}>
