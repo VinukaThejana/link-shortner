@@ -164,16 +164,16 @@ func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
-	var hasNextPage bool
 	if len(links) == limit+1 {
-		hasNextPage = true
-	} else {
-		hasNextPage = false
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"data":     links,
+			"nextPage": page + 1,
+		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"data":    links,
-		"hasMore": hasNextPage,
+		"data":     links,
+		"nextPage": nil,
 	})
 }
 
