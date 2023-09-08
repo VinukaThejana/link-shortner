@@ -1,14 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { Add } from "../components/links/Add";
-
-const user = Astro.locals.user;
+import { Home } from "../components/pages/Home";
 ---
 
 <Layout title="Link shortner">
-  <main
-    class="flex flex-col items-center justify-start min-h-screen text-white mt-16"
-  >
-    <Add client:only="react" />
-  </main>
+  <Home client:only={true} />
 </Layout>
