@@ -17,7 +17,7 @@ export const Add = () => {
   })
   type AddLink = z.infer<typeof schema>
 
-  const { register, handleSubmit, watch, setError, clearErrors ,formState: { errors } } = useForm<AddLink>({
+  const { register, handleSubmit, watch, setError, clearErrors ,formState: { errors }, reset } = useForm<AddLink>({
     resolver: zodResolver(schema)
   })
   const key = watch("key", "")
@@ -58,7 +58,6 @@ export const Add = () => {
     const data = await res.json() as {
       available: boolean
     }
-    console.log(data)
 
     if (data.available) {
       clearErrors("key")
@@ -106,6 +105,7 @@ export const Add = () => {
     }
 
     toast.success("Link created successfully")
+    reset();
   }
 
   return (
