@@ -143,6 +143,9 @@ func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 
 // GetLinks is a function to get all the links created by the user
 func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
+	page := c.QueryInt("page", 1)
+	limit := c.QueryInt("limit", 10)
+
 	userD, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)
@@ -153,7 +156,7 @@ func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
 
 	linkS := services.Link{H: h}
 
-	links, err := linkS.GetLinks(userD)
+	links, err := linkS.GetLinks(userD, page, limit)
 	if err != nil {
 		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
@@ -161,8 +164,16 @@ func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
+	var hasNextPage bool
+	if len(links) == limit+1 {
+		hasNextPage = true
+	} else {
+		hasNextPage = false
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"links": links,
+		"data":    links,
+		"hasMore": hasNextPage,
 	})
 }
 
