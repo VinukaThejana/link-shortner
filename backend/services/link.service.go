@@ -59,8 +59,8 @@ func (l *Link) GetLink(key string) (url *string, err error) {
 }
 
 // GetLinks is a function to get all the links relevant to the user
-func (l *Link) GetLinks(user *schemas.User) (links []models.Link, err error) {
-	err = l.H.DB.DB.Where(&models.Link{UserID: user.ID}).Find(&links).Error
+func (l *Link) GetLinks(user *schemas.User, page int, limit int) (links []models.Link, err error) {
+	err = l.H.DB.DB.Scopes(Paginate(l.H, page, limit)).Where(&models.Link{UserID: user.ID}).Find(&links).Error
 	if err != nil {
 		return []models.Link{}, err
 	}
