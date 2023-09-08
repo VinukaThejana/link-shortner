@@ -48,17 +48,13 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 	accessToken, err := utils.OAuth{}.GetGithubAccessToken(code, env)
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	userDetails, err := utils.OAuth{}.GetGithubUser(*accessToken)
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	fmt.Println(*userDetails, userDetails.ID)
@@ -67,15 +63,11 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 
 	user, err := githubS.GithubOAuth(*userDetails)
 	if err != nil {
-		if err == errors.ErrBadRequest {
-			return c.Status(fiber.StatusBadRequest).JSON(response{
-				Status: errors.ErrBadRequest.Error(),
-			})
+		if err != errors.ErrBadRequest {
+			log.Error(err, nil)
 		}
 
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	go func() {
@@ -85,9 +77,7 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 	accessTokenDetails, err := utils.Token{}.CreateAccessToken(h, user.ID, env.AccessTokenPrivateKey, env.AccessTokenExpires)
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	refreshTokenDetails, err := utils.Token{}.CreateRefreshToken(h, user.ID, env.RefreshTokenPrivateKey, env.RefreshTokenExpires, struct {
@@ -101,17 +91,13 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 	})
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(user, env.SessionTokenSecret, env.AccessTokenExpires)
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	c.Cookie(&fiber.Cookie{

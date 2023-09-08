@@ -73,36 +73,27 @@ func (Auth) Logout(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
 
 	refreshToken := c.Cookies("refresh_token")
 	if refreshToken == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(response{
-			Status: errors.ErrUnauthorized.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	tokenDetails, tokenValue, err := utils.Token{}.ValidateRefreshToken(h, refreshToken, env.RefreshTokenPublicKey)
 	if err != nil {
 		if err == errors.ErrUnauthorized {
-			return c.Status(fiber.StatusUnauthorized).JSON(response{
-				Status: err.Error(),
-			})
+			return c.Redirect(state)
 		}
 
 		if ok := (errors.CheckTokenError{}.Expired(err)); !ok {
-			return c.Status(fiber.StatusUnauthorized).JSON(response{
-				Status: errors.ErrRefreshTokenExpired.Error(),
-			})
+			return c.Redirect(state)
 		}
 
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		log.Error(err, nil)
+		return c.Redirect(state)
 	}
 
 	err = utils.Token{}.DeleteToken(h, tokenDetails.TokenUUID, tokenValue.AccessTokenUUID)
 	if err != nil {
 		log.Error(err, nil)
-		return c.Status(fiber.StatusInternalServerError).JSON(response{
-			Status: errors.ErrInternalServerError.Error(),
-		})
+		return c.Redirect(state)
 	}
 
 	expired := time.Now().Add(-time.Hour * 24)
@@ -123,7 +114,5 @@ func (Auth) Logout(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
 		Expires: expired,
 	})
 
-	return c.Status(fiber.StatusOK).JSON(response{
-		Status: errors.Okay,
-	})
+	return c.Redirect(state)
 }
