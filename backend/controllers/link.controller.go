@@ -162,6 +162,7 @@ func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
 	}
 
 	if len(links) == limit+1 {
+		links = links[:len(links)-1]
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"data":     links,
 			"nextPage": page + 1,
