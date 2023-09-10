@@ -154,7 +154,6 @@ export const Add = () => {
           {checkingKey ? <span className="loading loading-dots loading-lg"></span> : <span>Create</span>}
         </>
       </button>
-      <Toast />
     </form>
   )
 }
