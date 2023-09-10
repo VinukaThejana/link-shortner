@@ -1,7 +1,9 @@
+"use client"
+
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { LIMIT, deleteLink, getLinks } from "../../utils/queryFn"
-import { string } from "zod"
+import { PAGINATION_LIMIT, deleteUserLink ,getLinks } from "../../utils/queryFn"
 import { toast } from "react-hot-toast"
+import { Link } from "@/types/link"
 
 export const Get = () => {
   const {
@@ -23,7 +25,7 @@ export const Get = () => {
   })
 
   const deleteLinks = async (key: string, count: number) => {
-    const state = await deleteLink(key)
+    const state = await deleteUserLink(key)
     if (state === "fail") {
       toast.error("Deletion failed")
       return
@@ -31,7 +33,7 @@ export const Get = () => {
 
 
     toast.success("Deleted the link successfully")
-    const page = Math.floor(count/LIMIT)
+    const page = Math.floor(count/PAGINATION_LIMIT)
     await refetch()
   }
 

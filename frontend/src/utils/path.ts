@@ -1,19 +1,20 @@
 
-export const getBackendPath = (path: string, params?: string[]): string => {
+export function getBackendURL(path: string, params?: {key: string, value: string | number | boolean}[]): string {
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND;
   if (!Array.isArray(params)) {
-    return `${import.meta.env.PUBLIC_BACKEND}${path}`
+    return `${backendURL}${path}`;
   }
 
   var p = "";
   var i = 0;
   for (const param of params) {
     if (i === params.length - 1) {
-      p += param;
+      p += `${param.key}=${param.value}`;
       continue;
     }
 
-    p += `${param}&`
+    p += `${param.key}=${param.value}&`;
   }
 
-  return `${import.meta.env.PUBLIC_BACKEND}${path}?${p}`
+  return `${backendURL}${path}?${p}`;
 }

@@ -1,7 +1,7 @@
 
-type Link = {
-  ID: string
-  Key: string
-  URL: string
+export type Link = {
+  ID: string;
+  Key: string;
+  URL: string;
   UserID: string
 }

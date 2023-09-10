@@ -1,7 +1,7 @@
-import { connect } from "@planetscale/database"
+import { connect } from '@planetscale/database';
 
 export const pscale = connect({
-  host: import.meta.env.DB_HOST,
-  username: import.meta.env.DB_USERNAME,
-  password: import.meta.env.DB_PASSWORD
+  host: process.env.DB_HOST,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD
 })

@@ -1,11 +1,12 @@
+'use client'
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
-import { getBackendPath } from "../../utils/path";
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { toast } from "react-hot-toast";
-import { Toast } from "../utils/Toast";
+import { getBackendURL } from "@/utils/path";
 
 export const Add = () => {
   const [checkingKey, setCheckingKey] = useState(false)
@@ -35,7 +36,7 @@ export const Add = () => {
     setCheckingKey(true)
     clearErrors("key")
 
-    const res = await fetch(getBackendPath("/check/links/key"), {
+    const res = await fetch(getBackendURL("/check/links/key"), {
       headers: {
         "Content-Type": "application/json"
       },
@@ -87,7 +88,7 @@ export const Add = () => {
   }, [key])
 
   const onSubmit = async (d: AddLink) => {
-    const res = await fetch(getBackendPath("/links/new"), {
+    const res = await fetch(getBackendURL("/links/new"), {
       headers: {
         "Content-Type": "application/json"
       },
