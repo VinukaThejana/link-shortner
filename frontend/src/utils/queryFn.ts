@@ -4,67 +4,91 @@ import { getBackendURL } from "./path";
 export const PAGINATION_LIMIT = 5;
 
 export async function getLinks(page: number): Promise<{
-  data: Link[],
-  nextPage: number | null | undefined
+  data: Link[];
+  nextPage: number | null | undefined;
 }> {
   const res = await fetch(
     getBackendURL("/links", [
       {
         key: "page",
-        value: page
+        value: page,
       },
       {
         key: "limit",
-        value: PAGINATION_LIMIT
-      }
-    ]), {
+        value: PAGINATION_LIMIT,
+      },
+    ]),
+    {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       method: "GET",
-      credentials: "include"
-    }
-  )
+      credentials: "include",
+    },
+  );
 
   if (res.status !== 200) {
-    console.error(await res.json())
+    console.error(await res.json());
     return {
       data: [],
-      nextPage: page
-    }
+      nextPage: page,
+    };
   }
 
-  const data = await res.json() as {
-    data: Link[],
-    nextPage: number | null | undefined
-  }
+  const data = (await res.json()) as {
+    data: Link[];
+    nextPage: number | null | undefined;
+  };
 
-  const { data: links, nextPage } = data
+  const { data: links, nextPage } = data;
   return {
     data: links,
-    nextPage
-  }
+    nextPage,
+  };
 }
 
-
 export async function deleteUserLink(key: string): Promise<"success" | "fail"> {
-  const res = await fetch(
-    getBackendURL("/links/delete"), {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({
-        "key": key
-      })
-    }
-  )
+  const res = await fetch(getBackendURL("/links/delete"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({
+      key: key,
+    }),
+  });
 
   if (res.status !== 200) {
-    console.error(await res.json())
-    return "fail"
+    console.error(await res.json());
+    return "fail";
   }
 
-  return "success"
+  return "success";
+}
+
+export async function updateLink(
+  initialKey: string,
+  newKey: string,
+  url: string,
+): Promise<"success" | "fail"> {
+  const res = await fetch(getBackendURL("/links/update"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({
+      initial_key: initialKey,
+      new_key: newKey,
+      url: url,
+    }),
+  });
+
+  if (res.status !== 200) {
+    console.error(await res.json());
+    return "fail";
+  }
+
+  return "success";
 }
