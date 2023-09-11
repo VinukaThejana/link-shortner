@@ -37,6 +37,13 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 		})
 	}
 
+	regex := utils.Regex{}
+	if !regex.IsKeyValid(payload.Key) {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
 	linkS := services.Link{
 		H: h,
 	}
@@ -57,8 +64,8 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 // New create a new link with the key or without the key
 func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 	var payload struct {
-		Link string `json:"link"`
-		Key  string `json:"key"`
+		Link string `json:"link" validate:"required,url"`
+		Key  string `json:"key" validate:"min=2,max=25"`
 	}
 
 	if err := c.BodyParser(&payload); err != nil {
@@ -72,6 +79,15 @@ func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{
 			Status: errors.ErrBadRequest.Error(),
 		})
+	}
+
+	if payload.Key != "" {
+		regex := utils.Regex{}
+		if !regex.IsKeyValid(payload.Key) {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrBadRequest.Error(),
+			})
+		}
 	}
 
 	linkS := services.Link{H: h}
@@ -230,6 +246,194 @@ func (Links) DeleteLinks(c *fiber.Ctx, h *initializers.H) error {
 	err = linkS.DeleteLinks(userD)
 	if err != nil {
 		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response{
+		Status: errors.Okay,
+	})
+}
+
+// Update is a function to update the Link and the Key in the database
+func (Links) Update(c *fiber.Ctx, h *initializers.H) error {
+	userD, err := utils.Session{}.Get(c)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	var payload struct {
+		InitialKey string `json:"initial_key" validate:"required,min=2,max=25"`
+		NewKey     string `json:"new_key" validate:"required,min=2,max=25"`
+		URL        string `json:"url" validate:"required,url"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	regex := utils.Regex{}
+	if !regex.IsKeyValid(payload.InitialKey) || !regex.IsKeyValid(payload.NewKey) {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	linkS := services.Link{
+		H: h,
+	}
+
+	err = linkS.Update(userD, payload.InitialKey, payload.NewKey, payload.URL)
+	if err != nil {
+		log.Error(err, nil)
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrBadRequest.Error(),
+			})
+		}
+
+		if err == gorm.ErrDuplicatedKey {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrKeyAlreadyUsed.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response{
+		Status: errors.Okay,
+	})
+}
+
+// UpdateKey is a function that is used to update the shortned key of the link
+func (Links) UpdateKey(c *fiber.Ctx, h *initializers.H) error {
+	userD, err := utils.Session{}.Get(c)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	var payload struct {
+		InitialKey string `json:"initial_key" validate:"required,min=2,max=25"`
+		NewKey     string `json:"new_key" validate:"required,min=2,max=25"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	regex := utils.Regex{}
+	if !regex.IsKeyValid(payload.InitialKey) || !regex.IsKeyValid(payload.NewKey) {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	linkS := services.Link{
+		H: h,
+	}
+
+	err = linkS.UpdateKey(userD, payload.InitialKey, payload.NewKey)
+	if err != nil {
+		log.Error(err, nil)
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrBadRequest.Error(),
+			})
+		}
+
+		if err == gorm.ErrDuplicatedKey {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrKeyAlreadyUsed.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response{
+		Status: errors.Okay,
+	})
+}
+
+// UpdateURL is a function that is used to update the URL of the shortned link that is saved in the datbase
+func (Links) UpdateURL(c *fiber.Ctx, h *initializers.H) error {
+	userD, err := utils.Session{}.Get(c)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	var payload struct {
+		Key string `json:"new_key" validate:"required,min=2,max=25"`
+		URL string `json:"url" validate:"required,url"`
+	}
+
+	if err := c.BodyParser(&payload); err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	if ok := log.Validate(payload); !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	regex := utils.Regex{}
+	if !regex.IsKeyValid(payload.Key) {
+		return c.Status(fiber.StatusBadRequest).JSON(response{
+			Status: errors.ErrBadRequest.Error(),
+		})
+	}
+
+	linkS := services.Link{
+		H: h,
+	}
+
+	err = linkS.UpdateURL(userD, payload.Key, payload.URL)
+	if err != nil {
+		log.Error(err, nil)
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusBadRequest).JSON(response{
+				Status: errors.ErrBadRequest.Error(),
+			})
+		}
+
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
 			Status: errors.ErrInternalServerError.Error(),
 		})
