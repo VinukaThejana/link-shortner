@@ -87,3 +87,64 @@ func (l *Link) DeleteLinks(user *schemas.User) error {
 
 	return nil
 }
+
+// Update is a function that allows to update the key and the url both
+func (l *Link) Update(user *schemas.User, initialKey, newKey, url string) error {
+	var link models.Link
+	err := l.H.DB.DB.Where(&models.Link{
+		Key: initialKey,
+	}).Find(&link).Error
+	if err != nil {
+		return err
+	}
+
+	link.Key = newKey
+	link.URL = url
+
+	err = l.H.DB.DB.Save(&link).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateKey is a function that is used to update the key of a link in the database
+func (l *Link) UpdateKey(user *schemas.User, initialKey, newKey string) error {
+	var link models.Link
+	err := l.H.DB.DB.Where(&models.Link{
+		Key: initialKey,
+	}).Find(&link).Error
+	if err != nil {
+		return err
+	}
+
+	link.Key = newKey
+
+	err = l.H.DB.DB.Save(&link).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateURL is a function to update the URL stored in the database
+func (l *Link) UpdateURL(user *schemas.User, key, url string) error {
+	var link models.Link
+	err := l.H.DB.DB.Where(&models.Link{
+		Key: key,
+	}).Find(&link).Error
+	if err != nil {
+		return err
+	}
+
+	link.URL = url
+
+	err = l.H.DB.DB.Save(&link).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
