@@ -397,7 +397,7 @@ func (Links) UpdateURL(c *fiber.Ctx, h *initializers.H) error {
 	}
 
 	var payload struct {
-		Key string `json:"new_key" validate:"required,min=2,max=25"`
+		Key string `json:"key" validate:"required,min=2,max=25"`
 		URL string `json:"url" validate:"required,url"`
 	}
 
