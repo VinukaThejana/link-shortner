@@ -119,6 +119,17 @@ func main() {
 			return links.DeleteLinks(c, &h)
 		})
 	})
+	linksG.Route("/update", func(router fiber.Router) {
+		router.Post("/", func(c *fiber.Ctx) error {
+			return links.Update(c, &h)
+		})
+		router.Post("/key", func(c *fiber.Ctx) error {
+			return links.UpdateKey(c, &h)
+		})
+		router.Post("/url", func(c *fiber.Ctx) error {
+			return links.UpdateURL(c, &h)
+		})
+	})
 
 	checkG := app.Group("/check")
 	checkG.Route("/users", func(router fiber.Router) {
