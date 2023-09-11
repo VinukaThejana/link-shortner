@@ -1,5 +1,6 @@
 import { Link } from "@/types/link";
 import { getBackendURL } from "./path";
+import { Inter_Tight } from "next/font/google";
 
 export const PAGINATION_LIMIT = 5;
 
@@ -81,6 +82,53 @@ export async function updateLink(
     body: JSON.stringify({
       initial_key: initialKey,
       new_key: newKey,
+      url: url,
+    }),
+  });
+
+  if (res.status !== 200) {
+    console.error(await res.json());
+    return "fail";
+  }
+
+  return "success";
+}
+
+export async function updateLinkKey(
+  initialKey: string,
+  newKey: string,
+): Promise<"success" | "fail"> {
+  const res = await fetch(getBackendURL("/links/update/key"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify({
+      initial_key: initialKey,
+      new_key: newKey,
+    }),
+  });
+
+  if (res.status !== 200) {
+    console.error(await res.json());
+    return "fail";
+  }
+
+  return "success";
+}
+
+export async function updateLinkURL(
+  key: string,
+  url: string,
+): Promise<"success" | "fail"> {
+  const res = await fetch(getBackendURL("/links/update/url"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      key: key,
       url: url,
     }),
   });
