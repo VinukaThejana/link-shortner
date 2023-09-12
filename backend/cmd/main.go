@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -38,6 +39,13 @@ func init() {
 }
 
 func main() {
+	enableMigrations := flag.Bool("migrate", false, "Migrate the schema to the database")
+	flag.Parse()
+	if enableMigrations != nil && *enableMigrations {
+		h.Migrate()
+		return
+	}
+
 	app := fiber.New()
 
 	app.Use(fiberLogger.New())
