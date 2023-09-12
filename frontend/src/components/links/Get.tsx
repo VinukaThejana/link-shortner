@@ -158,7 +158,7 @@ export const Get = () => {
                               <button
                                 className="w-36 text-white sm:hidden btn bg-slate-400 btn-active disabled:btn-disabled"
                                 onClick={() => editLink(link.URL, link.Key)}
-                                disabled={setEditingLink !== undefined}
+                                disabled={editingLink !== undefined}
                               >
                                 <PencilSquareIcon className="w-6" />
                                 Edit

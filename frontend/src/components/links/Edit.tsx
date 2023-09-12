@@ -7,12 +7,7 @@ import {
   updateLink,
   isKeyAvailable,
 } from "@/utils/queryFn";
-import {
-  CheckBadgeIcon,
-  ClipboardIcon,
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import debounce from "lodash.debounce";
@@ -242,23 +237,24 @@ export const Edit = (props: {
       </span>
       <span className="flex flex-row gap-2 justify-start items-start sm:hidden">
         <button className="w-36 text-white sm:hidden btn btn-success btn-active disabled:btn-disabled">
-          <ClipboardIcon className="w-6" />
-          Copy
-        </button>
-
-        <button
-          className="w-36 text-white sm:hidden btn bg-slate-400 btn-active disabled:btn-disabled"
-          onClick={() => setEditingLink(link.Key)}
-        >
-          <PencilSquareIcon className="w-6" />
-          Edit
+          <>
+            {checkingKey ? (
+              <span className="loading loading-dots loading-lg"></span>
+            ) : (
+              <>
+                {updatingLink ? (
+                  <span className="loading loading-dots loading-lg"></span>
+                ) : (
+                  <>
+                    <CheckBadgeIcon className="w-6" />
+                    Save
+                  </>
+                )}
+              </>
+            )}
+          </>
         </button>
       </span>
-
-      <button className="w-36 text-white sm:hidden btn btn-error btn-active disabled:btn-disabled">
-        <TrashIcon className="w-6" />
-        Delete
-      </button>
     </form>
   );
 };
