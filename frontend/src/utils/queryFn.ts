@@ -127,6 +127,7 @@ export async function updateLinkURL(
       "Content-Type": "application/json",
     },
     method: "POST",
+    credentials: "include",
     body: JSON.stringify({
       key: key,
       url: url,
