@@ -166,3 +166,26 @@ export async function isKeyAvailable(
 
   return data.available ? "available" : "not available";
 }
+
+export async function createLink(
+  url: string,
+  key?: string,
+): Promise<"success" | "fail"> {
+  const res = await fetch(getBackendURL("/links/new"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    method: "POST",
+    body: JSON.stringify({
+      link: url,
+      key: key,
+    }),
+  });
+
+  if (res.status !== 200) {
+    return "fail";
+  }
+
+  return "success";
+}
