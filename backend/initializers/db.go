@@ -25,12 +25,16 @@ func (h *H) InitDB(env *config.Env) {
 
 	// Enable the logger for logging database activities
 	db.Logger = gormLogger.Default.LogMode(gormLogger.Info)
+	h.DB = &DB{DB: db}
+}
 
+// Migrate is a function that is used to migrate that schema to the database
+func (h *H) Migrate() {
 	color.Blue("Running migrations ... ")
-	err = db.AutoMigrate(&models.User{}, &models.Link{}, &models.Sessions{})
+	err := h.DB.DB.AutoMigrate(&models.User{}, &models.Link{}, &models.Sessions{})
 	if err != nil {
 		log.Errorf(err, nil)
 	}
 
-	h.DB = &DB{DB: db}
+	log.Success("\n\nAll schema changes are migrated ... ")
 }
