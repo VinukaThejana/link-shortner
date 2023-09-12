@@ -1,6 +1,6 @@
 import { Link } from "@/types/link";
 import { getBackendURL } from "./path";
-import { Inter_Tight } from "next/font/google";
+import { resourceUsage } from "process";
 
 export const PAGINATION_LIMIT = 5;
 
@@ -140,4 +140,29 @@ export async function updateLinkURL(
   }
 
   return "success";
+}
+
+export async function isKeyAvailable(
+  key: string,
+): Promise<"available" | "invalid" | "not available"> {
+  const res = await fetch(getBackendURL("/check/links/key"), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      key: key,
+    }),
+  });
+
+  if (res.status !== 200) {
+    console.error(await res.json());
+    return "invalid";
+  }
+
+  const data = (await res.json()) as {
+    available: boolean;
+  };
+
+  return data.available ? "available" : "not available";
 }
