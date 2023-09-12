@@ -1,8 +1,12 @@
 "use client";
 
 import { Link } from "@/types/link";
-import { getBackendURL } from "@/utils/path";
-import { updateLinkKey, updateLinkURL, updateLink } from "@/utils/queryFn";
+import {
+  updateLinkKey,
+  updateLinkURL,
+  updateLink,
+  isKeyAvailable,
+} from "@/utils/queryFn";
 import {
   CheckBadgeIcon,
   ClipboardIcon,
@@ -84,18 +88,8 @@ export const Edit = (props: {
       setCheckingKey(true);
       clearErrors("key");
 
-      const res = await fetch(getBackendURL("/check/links/key"), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          key: key,
-        }),
-      });
-
-      if (res.status !== 200) {
-        console.log("Not okay response code");
+      const state = await isKeyAvailable(key);
+      if (state === "invalid") {
         setError("key", {
           message: "invalid",
         });
@@ -104,24 +98,18 @@ export const Edit = (props: {
         return;
       }
 
-      const data = (await res.json()) as {
-        available: boolean;
-      };
-
-      if (data.available) {
-        clearErrors("key");
-        setKeyValid(true);
-        setCheckingKey(false);
-        return;
-      } else {
+      if (state === "not available") {
         setError("key", {
           message: "already used",
         });
         setKeyValid(false);
         setCheckingKey(false);
+        return;
       }
-      setCheckingKey(false);
 
+      clearErrors("key");
+      setKeyValid(true);
+      setCheckingKey(false);
       return;
     }, 500),
     [],
@@ -159,9 +147,7 @@ export const Edit = (props: {
 
     setUpdatingLink(true);
 
-    // Only the key has changed
     if (initialValues.url === data.link) {
-      // Only the url has changed
       const state = await updateLinkKey(initialValues.key, data.key);
       if (state === "fail") {
         setUpdatingLink(false);
@@ -169,7 +155,6 @@ export const Edit = (props: {
         return;
       }
     } else if (initialValues.key === data.key) {
-      // Both has changed
       const state = await updateLinkURL(data.key, data.link);
       if (state === "fail") {
         setUpdatingLink(false);

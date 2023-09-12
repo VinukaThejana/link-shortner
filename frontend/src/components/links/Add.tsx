@@ -8,6 +8,7 @@ import debounce from "lodash.debounce";
 import { toast } from "react-hot-toast";
 import { getBackendURL } from "@/utils/path";
 import { useQueryClient } from "@tanstack/react-query";
+import { isKeyAvailable } from "@/utils/queryFn";
 
 export const Add = () => {
   const [checkingKey, setCheckingKey] = useState(false);
@@ -56,18 +57,8 @@ export const Add = () => {
       setCheckingKey(true);
       clearErrors("key");
 
-      const res = await fetch(getBackendURL("/check/links/key"), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          key: key,
-        }),
-      });
-
-      if (res.status !== 200) {
-        console.log("Not okay response code");
+      const state = await isKeyAvailable(key);
+      if (state === "invalid") {
         setError("key", {
           message: "invalid",
         });
@@ -76,22 +67,17 @@ export const Add = () => {
         return;
       }
 
-      const data = (await res.json()) as {
-        available: boolean;
-      };
-
-      if (data.available) {
-        clearErrors("key");
-        setKeyValid(true);
-        setCheckingKey(false);
-        return;
-      } else {
+      if (state === "not available") {
         setError("key", {
           message: "already used",
         });
         setKeyValid(false);
         setCheckingKey(false);
+        return;
       }
+
+      clearErrors("key");
+      setKeyValid(true);
       setCheckingKey(false);
 
       return;
