@@ -108,12 +108,12 @@ export const Get = () => {
                             className="flex flex-col gap-4 sm:flex-col sm:gap-4"
                             key={j}
                           >
-                            <label className="w-80 text-black sm:w-96 input bg-[#D7D5D5] truncate inline-flex items-center justify-self-center">
+                            <label className="w-80 text-black sm:w-[500px] input bg-[#D7D5D5] truncate inline-flex items-center justify-self-center">
                               {link.URL}
                             </label>
 
                             <span className="flex justify-start items-center">
-                              <label className="w-80 text-black sm:w-64 input bg-[#D7D5D5] truncate inline-flex items-center justify-self-center">
+                              <label className="w-96 text-black sm:w-64 input bg-[#D7D5D5] truncate inline-flex items-center justify-self-center">
                                 {link.Key}
                               </label>
 

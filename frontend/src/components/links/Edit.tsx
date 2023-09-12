@@ -184,7 +184,7 @@ export const Edit = (props: {
       <span className="flex flex-col">
         <input
           type="text"
-          className="inline-flex justify-self-center items-center w-80 text-black sm:w-96 input-bordered input truncate"
+          className="inline-flex justify-self-center items-center w-80 text-black input-bordered input truncate sm:w-[500px]"
           placeholder={link.URL}
           {...register("link")}
         />
