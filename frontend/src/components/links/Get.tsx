@@ -13,7 +13,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Edit } from "./Edit";
 
 export const Get = () => {
@@ -91,22 +91,22 @@ export const Get = () => {
           <>
             {data.pages ? (
               <div className="flex flex-col gap-10">
-                {data.pages.map((links) => (
-                  <>
-                    {links.data.map((link, index) => (
-                      <>
+                {data.pages.map((links, i) => (
+                  <Fragment key={i}>
+                    {links.data.map((link, j) => (
+                      <Fragment key={j}>
                         {link.Key === editingLink ? (
                           <Edit
                             initialValues={initialValues}
                             setInitialValues={setInitialValues}
                             setEditingLink={setEditingLink}
                             link={link}
-                            key={index}
+                            key={j}
                           />
                         ) : (
                           <span
                             className="flex flex-col gap-4 sm:flex-col sm:gap-4"
-                            key={index}
+                            key={j}
                           >
                             <label className="w-80 text-black sm:w-96 input bg-[#D7D5D5] truncate inline-flex items-center justify-self-center">
                               {link.URL}
@@ -127,7 +127,7 @@ export const Get = () => {
                                 <span
                                   className="hidden w-44 text-red-400 cursor-pointer sm:inline-flex sm:w-8"
                                   onClick={async () =>
-                                    await handleLinkDeletion(link.Key, index)
+                                    await handleLinkDeletion(link.Key, j)
                                   }
                                 >
                                   <>
@@ -167,9 +167,7 @@ export const Get = () => {
 
                             <button
                               className="w-36 text-white sm:hidden btn btn-error btn-active disabled:btn-disabled"
-                              onClick={() =>
-                                handleLinkDeletion(link.Key, index)
-                              }
+                              onClick={() => handleLinkDeletion(link.Key, j)}
                               disabled={deleteLink !== undefined}
                             >
                               <TrashIcon className="w-6" />
@@ -183,9 +181,9 @@ export const Get = () => {
                             </button>
                           </span>
                         )}
-                      </>
+                      </Fragment>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </div>
             ) : null}
