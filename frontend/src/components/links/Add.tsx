@@ -6,9 +6,8 @@ import { z } from "zod";
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { toast } from "react-hot-toast";
-import { getBackendURL } from "@/utils/path";
 import { useQueryClient } from "@tanstack/react-query";
-import { isKeyAvailable } from "@/utils/queryFn";
+import { createLink, isKeyAvailable } from "@/utils/queryFn";
 
 export const Add = () => {
   const [checkingKey, setCheckingKey] = useState(false);
@@ -96,19 +95,8 @@ export const Add = () => {
   }, [key]);
 
   const onSubmit = async (d: AddLink) => {
-    const res = await fetch(getBackendURL("/links/new"), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({
-        link: d.link,
-        key: d.key,
-      }),
-    });
-
-    if (res.status !== 200) {
+    const state = await createLink(d.link, d.key);
+    if (state === "fail") {
       toast.error("Error addding the link");
       return;
     }
