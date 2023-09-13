@@ -1,8 +1,7 @@
 import { User } from "@/types/session";
 import * as jose from "jose";
 import { getCookie } from "./utils";
-import { getAllJSDocTagsOfKind } from "typescript";
-import { access } from "fs";
+import { getBackendURL } from "./path";
 
 export async function verifySession(token: string): Promise<boolean> {
   try {
@@ -88,4 +87,18 @@ export const isAccessTokenExpired = (): boolean => {
   }
 
   return false;
+};
+
+export const refreshAccessToken = async (): Promise<"success" | "fail"> => {
+  const res = await fetch(getBackendURL("/auth/refresh"), {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (res.status !== 200) {
+    console.error(await res.json());
+    return "fail";
+  }
+
+  return "success";
 };
