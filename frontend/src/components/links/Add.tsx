@@ -8,6 +8,7 @@ import debounce from "lodash.debounce";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { createLink, isKeyAvailable } from "@/utils/queryFn";
+import { Loader } from "../utils/Loader";
 
 export const Add = () => {
   const [checkingKey, setCheckingKey] = useState(false);
@@ -149,13 +150,7 @@ export const Add = () => {
         type="submit"
         disabled={!keyValid || checkingKey}
       >
-        <>
-          {checkingKey ? (
-            <span className="loading loading-dots loading-lg"></span>
-          ) : (
-            <span>Create</span>
-          )}
-        </>
+        <>{checkingKey ? <Loader /> : <span>Create</span>}</>
       </button>
     </form>
   );

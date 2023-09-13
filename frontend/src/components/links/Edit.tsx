@@ -21,6 +21,7 @@ import {
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+import { Loader } from "../utils/Loader";
 
 type InitialValues = {
   key: string;
@@ -219,11 +220,11 @@ export const Edit = (props: {
         >
           <>
             {checkingKey ? (
-              <span className="loading loading-dots loading-lg"></span>
+              <Loader />
             ) : (
               <>
                 {updatingLink ? (
-                  <span className="loading loading-dots loading-lg"></span>
+                  <Loader />
                 ) : (
                   <>
                     <CheckBadgeIcon className="w-6" />
@@ -239,11 +240,11 @@ export const Edit = (props: {
         <button className="w-36 text-white sm:hidden btn btn-success btn-active disabled:btn-disabled">
           <>
             {checkingKey ? (
-              <span className="loading loading-dots loading-lg"></span>
+              <Loader />
             ) : (
               <>
                 {updatingLink ? (
-                  <span className="loading loading-dots loading-lg"></span>
+                  <Loader />
                 ) : (
                   <>
                     <CheckBadgeIcon className="w-6" />

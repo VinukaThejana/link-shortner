@@ -15,6 +15,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Fragment, useState } from "react";
 import { Edit } from "./Edit";
+import { Loader } from "../utils/Loader";
+import { hasLinks } from "@/utils/utils";
 
 export const Get = () => {
   const [editingLink, setEditingLink] = useState<string | undefined>(undefined);
@@ -132,7 +134,7 @@ export const Get = () => {
                                 >
                                   <>
                                     {link.Key === deleteLink ? (
-                                      <span className="loading loading-dots loading-lg"></span>
+                                      <Loader />
                                     ) : (
                                       <TrashIcon />
                                     )}
@@ -173,7 +175,7 @@ export const Get = () => {
                               <TrashIcon className="w-6" />
                               <>
                                 {link.Key === deleteLink ? (
-                                  <span className="loading loading-dots loading-lg"></span>
+                                  <Loader />
                                 ) : (
                                   "Delete"
                                 )}
@@ -192,7 +194,7 @@ export const Get = () => {
       </>
 
       <>
-        {data ? (
+        {hasLinks(data) ? (
           <button
             className="my-16 text-white btn btn-info disabled:btn-active"
             disabled={
@@ -203,11 +205,7 @@ export const Get = () => {
             }
             onClick={async () => await fetchNextPage()}
           >
-            {isFetching ? (
-              <span className="loading loading-dots loading-lg"></span>
-            ) : (
-              <span>Load more</span>
-            )}
+            {isFetching ? <Loader /> : <span>Load more</span>}
           </button>
         ) : null}
       </>
