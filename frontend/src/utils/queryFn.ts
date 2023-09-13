@@ -1,6 +1,5 @@
 import { Link } from "@/types/link";
 import { getBackendURL } from "./path";
-import { resourceUsage } from "process";
 
 export const PAGINATION_LIMIT = 5;
 
