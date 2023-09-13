@@ -94,7 +94,7 @@ func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env
 		return c.Redirect(state)
 	}
 
-	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(user, env.SessionTokenSecret, env.AccessTokenExpires)
+	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(user, env.SessionTokenSecret, env.RefreshTokenExpires)
 	if err != nil {
 		log.Error(err, nil)
 		return c.Redirect(state)
