@@ -65,7 +65,7 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 	var payload struct {
 		Link string `json:"link" validate:"required,url"`
-		Key  string `json:"key" validate:"min=2,max=25"`
+		Key  string `json:"key" validate:"omitempty,min=2,max=25"`
 	}
 
 	if err := c.BodyParser(&payload); err != nil {
