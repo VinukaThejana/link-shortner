@@ -7,6 +7,7 @@ import (
 	"github.com/VinukaThejana/link-shortner/backend/config"
 	"github.com/VinukaThejana/link-shortner/backend/errors"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
+	"github.com/VinukaThejana/link-shortner/backend/schemas"
 	"github.com/VinukaThejana/link-shortner/backend/services"
 	"github.com/VinukaThejana/link-shortner/backend/utils"
 	"github.com/gofiber/fiber/v2"
@@ -102,7 +103,7 @@ func (o *OAuth) GithubOAuthCalback(c *fiber.Ctx) error {
 		return c.Redirect(state)
 	}
 
-	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(user, env.SessionTokenSecret, env.RefreshTokenExpires)
+	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(schemas.FilterUserRecord(user), env.SessionTokenSecret, env.RefreshTokenExpires)
 	if err != nil {
 		log.Error(err, nil)
 		return c.Redirect(state)

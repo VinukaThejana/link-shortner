@@ -268,7 +268,11 @@ func validateToken(h *initializers.H, token, publicKey string) (*TokenDetails, *
 }
 
 // CreateSessionToken is a function that is used to create a new session token for the user
-func (Token) CreateSessionToken(user models.User, privateKey string, ttl time.Duration) (*TokenDetails, error) {
+func (Token) CreateSessionToken(user *schemas.User, privateKey string, ttl time.Duration) (*TokenDetails, error) {
+	if user == nil {
+		return nil, fmt.Errorf("no user was provided")
+	}
+
 	uid, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
@@ -294,8 +298,8 @@ func (Token) CreateSessionToken(user models.User, privateKey string, ttl time.Du
 	claims["username"] = user.Username
 	claims["photo_url"] = user.PhotoURL
 	claims["email"] = user.Email
-	claims["role"] = *user.Role
-	claims["provider"] = *user.Provider
+	claims["role"] = user.Role
+	claims["provider"] = user.Provider
 	claims["provider_id"] = user.ProviderID
 
 	*td.Token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(privateKey))

@@ -66,6 +66,7 @@ func (u *User) CheckUsername(c *fiber.Ctx) error {
 // UpdateEmail is a function that is used to update the email of the user
 func (u *User) UpdateEmail(c *fiber.Ctx) error {
 	h := u.H
+	env := u.Env
 
 	var payload struct {
 		Email string `json:"email" validate:"required,email"`
@@ -117,6 +118,25 @@ func (u *User) UpdateEmail(c *fiber.Ctx) error {
 			Status: errors.ErrInternalServerError.Error(),
 		})
 	}
+
+	userD.Email = payload.Email
+	sessionTokenDetails, err := utils.Token{}.CreateSessionToken(userD, env.SessionTokenSecret, env.RefreshTokenExpires)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "session",
+		Value:    *sessionTokenDetails.Token,
+		Path:     "/",
+		MaxAge:   env.RefreshTokenMaxAge * 60,
+		Secure:   false,
+		HTTPOnly: false,
+		Domain:   "localhost",
+	})
 
 	return c.Status(fiber.StatusOK).JSON(response{
 		Status: errors.Okay,
@@ -219,6 +239,7 @@ func (u *User) UpdateName(c *fiber.Ctx) error {
 			Status: errors.ErrInternalServerError.Error(),
 		})
 	}
+	userD.Name = payload.Name
 
 	return c.Status(fiber.StatusOK).JSON(response{
 		Status: errors.Okay,
