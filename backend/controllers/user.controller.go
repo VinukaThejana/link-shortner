@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/VinukaThejana/link-shortner/backend/config"
 	"github.com/VinukaThejana/link-shortner/backend/errors"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/VinukaThejana/link-shortner/backend/models"
@@ -11,10 +12,13 @@ import (
 )
 
 // User contains all the user related controllers
-type User struct{}
+type User struct {
+	H   *initializers.H
+	Env *config.Env
+}
 
 // GetMe is a function to get the user details of the currently logged in user
-func (User) GetMe(c *fiber.Ctx) error {
+func (u *User) GetMe(c *fiber.Ctx) error {
 	user, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)
@@ -27,7 +31,9 @@ func (User) GetMe(c *fiber.Ctx) error {
 }
 
 // CheckUsername is a function to check wether the username is availale or not
-func (User) CheckUsername(c *fiber.Ctx, h *initializers.H) error {
+func (u *User) CheckUsername(c *fiber.Ctx) error {
+	h := u.H
+
 	var payload struct {
 		Username string `json:"username"`
 	}
@@ -58,7 +64,9 @@ func (User) CheckUsername(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // UpdateEmail is a function that is used to update the email of the user
-func (User) UpdateEmail(c *fiber.Ctx, h *initializers.H) error {
+func (u *User) UpdateEmail(c *fiber.Ctx) error {
+	h := u.H
+
 	var payload struct {
 		Email string `json:"email" validate:"required,email"`
 	}
@@ -116,7 +124,9 @@ func (User) UpdateEmail(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // UpdateUsername is a function to change the username of the username to another valid username
-func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
+func (u *User) UpdateUsername(c *fiber.Ctx) error {
+	h := u.H
+
 	var payload struct {
 		Username string `json:"username" validate:"required,min=3,max=15"`
 	}
@@ -172,7 +182,9 @@ func (User) UpdateUsername(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // UpdateName is a function to update the name of the user
-func (User) UpdateName(c *fiber.Ctx, h *initializers.H) error {
+func (u *User) UpdateName(c *fiber.Ctx) error {
+	h := u.H
+
 	var payload struct {
 		Name string `json:"name" validate:"required,min=3,max=50"`
 	}

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/VinukaThejana/link-shortner/backend/config"
 	"github.com/VinukaThejana/link-shortner/backend/errors"
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/VinukaThejana/link-shortner/backend/services"
@@ -11,11 +12,16 @@ import (
 )
 
 // Links contains all the operations that are related to links
-type Links struct{}
+type Links struct {
+	H   *initializers.H
+	Env *config.Env
+}
 
 // CheckKey is a function that is used to check wether a given key is used previously
 // in the database
-func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) CheckKey(c *fiber.Ctx) error {
+	h := l.H
+
 	var payload struct {
 		Key string `json:"key" validate:"required,min=3,max=20"`
 	}
@@ -62,7 +68,9 @@ func (Links) CheckKey(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // New create a new link with the key or without the key
-func (Links) New(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) New(c *fiber.Ctx) error {
+	h := l.H
+
 	var payload struct {
 		Link string `json:"link" validate:"required,url"`
 		Key  string `json:"key" validate:"omitempty,min=2,max=25"`
@@ -155,7 +163,9 @@ func (Links) New(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // GetLinks is a function to get all the links created by the user
-func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) GetLinks(c *fiber.Ctx) error {
+	h := l.H
+
 	page := c.QueryInt("page", 1)
 	limit := c.QueryInt("limit", 10)
 
@@ -192,7 +202,9 @@ func (Links) GetLinks(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // DeleteLink is a function to delete a link with a given key
-func (Links) DeleteLink(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) DeleteLink(c *fiber.Ctx) error {
+	h := l.H
+
 	var payload struct {
 		Key string `json:"key" validate:"required,min=3"`
 	}
@@ -233,7 +245,9 @@ func (Links) DeleteLink(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // DeleteLinks is a function that is used to delete all the links that belong to the user
-func (Links) DeleteLinks(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) DeleteLinks(c *fiber.Ctx) error {
+	h := l.H
+
 	userD, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)
@@ -257,7 +271,9 @@ func (Links) DeleteLinks(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // Update is a function to update the Link and the Key in the database
-func (Links) Update(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) Update(c *fiber.Ctx) error {
+	h := l.H
+
 	userD, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)
@@ -322,7 +338,9 @@ func (Links) Update(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // UpdateKey is a function that is used to update the shortned key of the link
-func (Links) UpdateKey(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) UpdateKey(c *fiber.Ctx) error {
+	h := l.H
+
 	userD, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)
@@ -387,7 +405,9 @@ func (Links) UpdateKey(c *fiber.Ctx, h *initializers.H) error {
 }
 
 // UpdateURL is a function that is used to update the URL of the shortned link that is saved in the datbase
-func (Links) UpdateURL(c *fiber.Ctx, h *initializers.H) error {
+func (l *Links) UpdateURL(c *fiber.Ctx) error {
+	h := l.H
+
 	userD, err := utils.Session{}.Get(c)
 	if err != nil {
 		log.Error(err, nil)

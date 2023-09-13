@@ -12,10 +12,16 @@ import (
 )
 
 // Auth related middleware actions
-type Auth struct{}
+type Auth struct {
+	H   *initializers.H
+	Env *config.Env
+}
 
 // CheckAuth is a middleware to check wether the users are authenticated or not
-func (Auth) CheckAuth(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
+func (a *Auth) CheckAuth(c *fiber.Ctx) error {
+	h := a.H
+	env := a.Env
+
 	var accessToken string
 	authorization := c.Get("Authorization")
 

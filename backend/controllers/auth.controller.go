@@ -11,10 +11,16 @@ import (
 )
 
 // Auth is a struct containing the Auth controllers
-type Auth struct{}
+type Auth struct {
+	H   *initializers.H
+	Env *config.Env
+}
 
 // RefreshToken is a function that is used to refresh the access token by providing the refresh token
-func (Auth) RefreshToken(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
+func (a *Auth) RefreshToken(c *fiber.Ctx) error {
+	h := a.H
+	env := a.Env
+
 	refreshToken := c.Cookies("refresh_token")
 	if refreshToken == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(response{
@@ -65,7 +71,10 @@ func (Auth) RefreshToken(c *fiber.Ctx, h *initializers.H, env *config.Env) error
 }
 
 // Logout is a function that is used to logout the user from the application
-func (Auth) Logout(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
+func (a *Auth) Logout(c *fiber.Ctx) error {
+	h := a.H
+	env := a.Env
+
 	state := c.Query("state")
 	if state == "" {
 		state = env.FrontEndDomain

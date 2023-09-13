@@ -13,10 +13,15 @@ import (
 )
 
 // OAuth contains oauth releated controllers
-type OAuth struct{}
+type OAuth struct {
+	H   *initializers.H
+	Env *config.Env
+}
 
 // RedirectToGitHubOAuthFlow redirect the user to the Github reidrect URL to login with Github
-func (OAuth) RedirectToGitHubOAuthFlow(c *fiber.Ctx, env *config.Env) error {
+func (o *OAuth) RedirectToGitHubOAuthFlow(c *fiber.Ctx) error {
+	env := o.Env
+
 	options := url.Values{
 		"client_id":    []string{env.GithubClientID},
 		"redirect_url": []string{env.GithubRedirectURL},
@@ -30,7 +35,10 @@ func (OAuth) RedirectToGitHubOAuthFlow(c *fiber.Ctx, env *config.Env) error {
 
 // GithubOAuthCalback is a function that is used by Github to provide a unique code for the user who just tried
 // to login
-func (OAuth) GithubOAuthCalback(c *fiber.Ctx, h *initializers.H, env *config.Env) error {
+func (o *OAuth) GithubOAuthCalback(c *fiber.Ctx) error {
+	h := o.H
+	env := o.Env
+
 	code := c.Query("code")
 	if code == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(response{

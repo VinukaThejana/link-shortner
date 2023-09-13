@@ -24,6 +24,8 @@ var (
 	env config.Env
 	h   initializers.H
 
+	authM middleware.Auth
+
 	auth  controllers.Auth
 	oauth controllers.OAuth
 	user  controllers.User
@@ -36,6 +38,28 @@ func init() {
 	h.InitStorage(&env)
 	h.InitDB(&env)
 	h.InitRedis(&env)
+
+	authM = middleware.Auth{
+		H:   &h,
+		Env: &env,
+	}
+
+	auth = controllers.Auth{
+		H:   &h,
+		Env: &env,
+	}
+	oauth = controllers.OAuth{
+		H:   &h,
+		Env: &env,
+	}
+	user = controllers.User{
+		H:   &h,
+		Env: &env,
+	}
+	links = controllers.Links{
+		H:   &h,
+		Env: &env,
+	}
 }
 
 func main() {
@@ -74,81 +98,41 @@ func main() {
 	}))
 
 	authG := app.Group("/auth")
-	authG.Get("/login", func(c *fiber.Ctx) error {
-		return oauth.RedirectToGitHubOAuthFlow(c, &env)
-	})
-	authG.Get("/logout", func(c *fiber.Ctx) error {
-		return auth.Logout(c, &h, &env)
-	})
-	authG.Get("/refresh", func(c *fiber.Ctx) error {
-		return auth.RefreshToken(c, &h, &env)
-	})
+	authG.Get("/login", oauth.RedirectToGitHubOAuthFlow)
+	authG.Get("/logout", auth.Logout)
+	authG.Get("/refresh", auth.RefreshToken)
 
 	oauthG := app.Group("/oauth")
-	oauthG.Get("/callback/github", func(c *fiber.Ctx) error {
-		return oauth.GithubOAuthCalback(c, &h, &env)
-	})
-	oauthG.Get("/login/github", func(c *fiber.Ctx) error {
-		return oauth.RedirectToGitHubOAuthFlow(c, &env)
-	})
+	oauthG.Get("/callback/github", oauth.GithubOAuthCalback)
+	oauthG.Get("/login/github", oauth.RedirectToGitHubOAuthFlow)
 
-	userG := app.Group("/user", func(c *fiber.Ctx) error {
-		return middleware.Auth{}.CheckAuth(c, &h, &env)
-	})
-	userG.Get("/me", func(c *fiber.Ctx) error {
-		return user.GetMe(c)
-	})
+	userG := app.Group("/user", authM.CheckAuth)
+	userG.Get("/me", user.GetMe)
 	userG.Route("/update", func(router fiber.Router) {
-		router.Post("/email", func(c *fiber.Ctx) error {
-			return user.UpdateEmail(c, &h)
-		})
-		router.Post("/username", func(c *fiber.Ctx) error {
-			return user.UpdateUsername(c, &h)
-		})
-		router.Post("/name", func(c *fiber.Ctx) error {
-			return user.UpdateName(c, &h)
-		})
+		router.Post("/email", user.UpdateEmail)
+		router.Post("/username", user.UpdateUsername)
+		router.Post("/name", user.UpdateName)
 	})
 
-	linksG := app.Group("/links", func(c *fiber.Ctx) error {
-		return middleware.Auth{}.CheckAuth(c, &h, &env)
-	})
-	linksG.Get("/", func(c *fiber.Ctx) error {
-		return links.GetLinks(c, &h)
-	})
-	linksG.Post("/new", func(c *fiber.Ctx) error {
-		return links.New(c, &h)
-	})
+	linksG := app.Group("/links", authM.CheckAuth)
+	linksG.Get("/", links.GetLinks)
+	linksG.Post("/new", links.New)
 	linksG.Route("/delete", func(router fiber.Router) {
-		router.Post("/", func(c *fiber.Ctx) error {
-			return links.DeleteLink(c, &h)
-		})
-		router.Post("/all", func(c *fiber.Ctx) error {
-			return links.DeleteLinks(c, &h)
-		})
+		router.Post("/", links.DeleteLink)
+		router.Post("/all", links.DeleteLinks)
 	})
 	linksG.Route("/update", func(router fiber.Router) {
-		router.Post("/", func(c *fiber.Ctx) error {
-			return links.Update(c, &h)
-		})
-		router.Post("/key", func(c *fiber.Ctx) error {
-			return links.UpdateKey(c, &h)
-		})
-		router.Post("/url", func(c *fiber.Ctx) error {
-			return links.UpdateURL(c, &h)
-		})
+		router.Post("/", links.Update)
+		router.Post("/key", links.UpdateKey)
+		router.Post("/url", links.UpdateURL)
 	})
 
 	checkG := app.Group("/check")
 	checkG.Route("/users", func(router fiber.Router) {
-		router.Post("/username", func(c *fiber.Ctx) error {
-			return user.CheckUsername(c, &h)
-		})
+		router.Post("/username", user.CheckUsername)
 	})
 	checkG.Route("/links", func(router fiber.Router) {
-		router.Post("/key", func(c *fiber.Ctx) error {
-			return links.CheckKey(c, &h)
-		})
+		router.Post("/key", links.CheckKey)
 	})
 
 	log.Errorf(app.Listen(fmt.Sprintf(":%s", env.Port)), nil)
