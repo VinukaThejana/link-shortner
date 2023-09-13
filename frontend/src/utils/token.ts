@@ -102,3 +102,44 @@ export const refreshAccessToken = async (): Promise<"success" | "fail"> => {
 
   return "success";
 };
+
+type Res = {
+  status: string;
+};
+const checkError = async (res: Response) => {
+  const { status } = <Res>await res.json();
+  if (
+    status === "access_token_not_provided" ||
+    status === "access_token_expired"
+  ) {
+    await refreshAccessToken();
+    return;
+  }
+
+  console.error(status);
+};
+
+export const Fetch = async (
+  input: URL | RequestInfo,
+  init?: {
+    method?: string | undefined;
+    body?: BodyInit | null | undefined;
+  },
+): Promise<Response> => {
+  if (isAccessTokenExpired()) {
+    await refreshAccessToken();
+  }
+
+  const res = await fetch(input, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ...init,
+  });
+  if (res.status !== 200) {
+    await checkError(res);
+  }
+
+  return res;
+};
