@@ -1,4 +1,7 @@
 connect:
+	bash ./scripts/pscale.sh
+
+db:
 	bash ./scripts/db.sh
 
 migrate:
