@@ -61,7 +61,7 @@ func (a *Auth) RefreshToken(c *fiber.Ctx) error {
 		Path:     "/",
 		MaxAge:   env.AccessTokenMaxAge * 60,
 		Secure:   false,
-		HTTPOnly: true,
+		HTTPOnly: false,
 		Domain:   "localhost",
 	})
 

@@ -114,7 +114,7 @@ func (o *OAuth) GithubOAuthCalback(c *fiber.Ctx) error {
 		Path:     "/",
 		MaxAge:   env.AccessTokenMaxAge * 60,
 		Secure:   false,
-		HTTPOnly: true,
+		HTTPOnly: false,
 		Domain:   "localhost",
 	})
 
@@ -134,7 +134,7 @@ func (o *OAuth) GithubOAuthCalback(c *fiber.Ctx) error {
 		Path:     "/",
 		MaxAge:   env.RefreshTokenMaxAge * 60,
 		Secure:   false,
-		HTTPOnly: true,
+		HTTPOnly: false,
 		Domain:   "localhost",
 	})
 
