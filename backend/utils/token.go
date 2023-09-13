@@ -156,7 +156,6 @@ func (Token) CreateAccessToken(h *initializers.H, userID uint64, privateKey stri
 func (Token) ValidateRefreshToken(h *initializers.H, token, publicKey string) (*TokenDetails, *schemas.RefreshTokenDetails, error) {
 	td, val, err := validateToken(h, token, publicKey)
 	if err != nil {
-		fmt.Println("The error is from here in line 159")
 		return nil, nil, err
 	} else if val == nil {
 		return nil, nil, errors.ErrInternalServerError
