@@ -1,5 +1,6 @@
 import { Link } from "@/types/link";
 import { getBackendURL } from "./path";
+import { Fetch } from "./token";
 
 export const PAGINATION_LIMIT = 5;
 
@@ -7,7 +8,7 @@ export async function getLinks(page: number): Promise<{
   data: Link[];
   nextPage: number | null | undefined;
 }> {
-  const res = await fetch(
+  const res = await Fetch(
     getBackendURL("/links", [
       {
         key: "page",
@@ -18,17 +19,9 @@ export async function getLinks(page: number): Promise<{
         value: PAGINATION_LIMIT,
       },
     ]),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "GET",
-      credentials: "include",
-    },
   );
 
   if (res.status !== 200) {
-    console.error(await res.json());
     return {
       data: [],
       nextPage: page,
@@ -48,12 +41,8 @@ export async function getLinks(page: number): Promise<{
 }
 
 export async function deleteUserLink(key: string): Promise<"success" | "fail"> {
-  const res = await fetch(getBackendURL("/links/delete"), {
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const res = await Fetch(getBackendURL("/links/delete"), {
     method: "POST",
-    credentials: "include",
     body: JSON.stringify({
       key: key,
     }),
@@ -72,12 +61,8 @@ export async function updateLink(
   newKey: string,
   url: string,
 ): Promise<"success" | "fail"> {
-  const res = await fetch(getBackendURL("/links/update"), {
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const res = await Fetch(getBackendURL("/links/update"), {
     method: "POST",
-    credentials: "include",
     body: JSON.stringify({
       initial_key: initialKey,
       new_key: newKey,
@@ -97,12 +82,8 @@ export async function updateLinkKey(
   initialKey: string,
   newKey: string,
 ): Promise<"success" | "fail"> {
-  const res = await fetch(getBackendURL("/links/update/key"), {
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const res = await Fetch(getBackendURL("/links/update/key"), {
     method: "POST",
-    credentials: "include",
     body: JSON.stringify({
       initial_key: initialKey,
       new_key: newKey,
@@ -121,12 +102,8 @@ export async function updateLinkURL(
   key: string,
   url: string,
 ): Promise<"success" | "fail"> {
-  const res = await fetch(getBackendURL("/links/update/url"), {
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const res = await Fetch(getBackendURL("/links/update/url"), {
     method: "POST",
-    credentials: "include",
     body: JSON.stringify({
       key: key,
       url: url,
@@ -170,11 +147,7 @@ export async function createLink(
   url: string,
   key?: string,
 ): Promise<"success" | "fail"> {
-  const res = await fetch(getBackendURL("/links/new"), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
+  const res = await Fetch(getBackendURL("/links/new"), {
     method: "POST",
     body: JSON.stringify({
       link: url,
