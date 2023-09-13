@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/VinukaThejana/link-shortner/backend/config"
@@ -8,6 +10,7 @@ import (
 	"github.com/VinukaThejana/link-shortner/backend/initializers"
 	"github.com/VinukaThejana/link-shortner/backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 // Auth is a struct containing the Auth controllers
@@ -48,8 +51,51 @@ func (a *Auth) RefreshToken(c *fiber.Ctx) error {
 		})
 	}
 
+	ctx := context.TODO()
+
+	data := h.R.RS.Get(ctx, tokenClaims.TokenUUID).Val()
+	if data == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(response{
+			Status: errors.ErrUnauthorized.Error(),
+		})
+	}
+	var payload struct {
+		UserID          string `json:"UserID"`
+		AccessTokenUUID string `json:"AccessTokenUUID"`
+	}
+	err = json.Unmarshal([]byte(data), &payload)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+	err = h.R.RS.Del(ctx, payload.AccessTokenUUID).Err()
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
 	accessTokenDetails, err := utils.Token{}.CreateAccessToken(h, tokenClaims.UserID, env.AccessTokenPrivateKey, env.AccessTokenExpires)
 	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	payloadByte, err := json.Marshal(payload)
+	if err != nil {
+		log.Error(err, nil)
+		return c.Status(fiber.StatusInternalServerError).JSON(response{
+			Status: errors.ErrInternalServerError.Error(),
+		})
+	}
+
+	err = h.R.RS.Set(ctx, tokenClaims.TokenUUID, string(payloadByte), redis.KeepTTL).Err()
+	if err != nil {
+		log.Error(err, nil)
 		return c.Status(fiber.StatusInternalServerError).JSON(response{
 			Status: errors.ErrInternalServerError.Error(),
 		})
