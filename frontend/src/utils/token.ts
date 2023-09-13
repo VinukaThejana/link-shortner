@@ -1,6 +1,8 @@
 import { User } from "@/types/session";
 import * as jose from "jose";
 import { getCookie } from "./utils";
+import { getAllJSDocTagsOfKind } from "typescript";
+import { access } from "fs";
 
 export async function verifySession(token: string): Promise<boolean> {
   try {
@@ -70,4 +72,20 @@ export const getAccessToken = (): AccessToken | null => {
   }
 
   return payload;
+};
+
+export const isAccessTokenExpired = (): boolean => {
+  const accessToken = getAccessToken();
+  if (!accessToken) {
+    return true;
+  }
+
+  const now = Math.floor(new Date().getTime() / 1000);
+  const exp = accessToken.exp;
+  const grace = 60 * 1;
+  if (now >= exp - grace) {
+    return true;
+  }
+
+  return false;
 };
